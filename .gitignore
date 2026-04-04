@@ -1,4 +1,5 @@
 .env
-.jpeg
-node_modules
+*.jpeg
+node_modules/
 contrato.pdf
+demos/
