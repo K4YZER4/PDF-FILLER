@@ -11,5 +11,13 @@ export function validarRellenarPDF(
       .json({ error: "Faltan parámetros: ine, tabla y extra son requeridos" });
     return;
   }
+  const plazosValidos = [24, 36, 48, 72, 96, 120];
+  if (!plazosValidos.includes(Number(tabla.plazoQuincenas))) {
+    res.status(400).json({
+      error: `quincenas inválido. Valores permitidos: ${plazosValidos.join(", ")}`,
+    });
+    return;
+  }
+
   next();
 }

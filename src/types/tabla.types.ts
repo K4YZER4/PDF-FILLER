@@ -6,5 +6,6 @@ interface FilaTabla {
   plazoQuincenas: number;
   tasaMensual: number;
   importeInteres: number;
+  cat: number;
 }
 export { FilaTabla };

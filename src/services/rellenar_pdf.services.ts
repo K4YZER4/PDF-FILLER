@@ -33,6 +33,10 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
     "MONTO TOTAL": String(tabla.montoPagare),
     DESCUENTO: String(tabla.descuentoQuincenal),
     "TASA ANUAL": String(tabla.tasaMensual * 12),
+    // Agregar en la sección tabla del service:
+    CAT: String(tabla.cat),
+    QNA: String(tabla.plazoQuincenas), // quincenal count
+    "PLAZO LETRA": `${tabla.plazoQuincenas} QUINCENAS`,
 
     // ── Extra con defaults de prueba ─────────────
     FOLIO: extra.folio ?? "TEST-001",

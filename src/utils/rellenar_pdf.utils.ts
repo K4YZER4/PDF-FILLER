@@ -12,14 +12,25 @@ export async function rellenarCamposPDF(
   const form = pdfDoc.getForm();
 
   // Recorre el JSON y llena cada campo
+  // for (const [campo, valor] of Object.entries(datos)) {
+  //   try {
+  //     form.getTextField(campo).setText(valor);
+  //   } catch {
+  //     console.warn(`⚠️  Campo no encontrado: "${campo}"`);
+  //   }
+  // }
   for (const [campo, valor] of Object.entries(datos)) {
     try {
-      form.getTextField(campo).setText(valor);
+      const field = form.getField(campo);
+      if (field.constructor.name === "PDFDropdown") {
+        form.getDropdown(campo).select(valor);
+      } else {
+        form.getTextField(campo).setText(valor);
+      }
     } catch {
-      console.warn(`⚠️  Campo no encontrado: "${campo}"`);
+      console.warn(`⚠️ Campo no encontrado: "${campo}"`);
     }
   }
-
   const pdfFinal = await pdfDoc.save();
   return Buffer.from(pdfFinal);
 }

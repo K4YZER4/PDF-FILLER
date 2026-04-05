@@ -1,18 +1,7 @@
 // src/utils/tablas_descuento.utils.ts
 import * as XLSX from "xlsx";
 import path from "path";
-import { range } from "pdf-lib";
-
-interface FilaTabla {
-  montoNeto: number;
-  montoPagare: number;
-  descuentoQuincenal: number;
-  plazoMeses: number;
-  plazoQuincenas: number;
-  tasaMensual: number;
-  importeInteres: number;
-}
-
+import { FilaTabla } from "../types";
 // Guardamos todas las tablas en memoria
 const tablas: Record<number, FilaTabla[]> = {};
 
@@ -22,8 +11,8 @@ function cargarTablas() {
 
   workbook.SheetNames.forEach((sheetName) => {
     const sheet = workbook.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json<any>(sheet, { range: 9, defval: 0 });
-
+    const rows = XLSX.utils.sheet_to_json<any>(sheet, { range: 9, defval: 0 }); //El range nueve se usa para decir donde esta la primera columna donde estan los headers del pdf
+    const catRaw = sheet["E6"]?.v;
     const filas = rows
       .filter((row) => row[" Monto Neto a Prestar "] > 0)
       .map((row) => ({
@@ -36,6 +25,7 @@ function cargarTablas() {
         plazoQuincenas: row[" Plazo Knal "],
         tasaMensual: Math.round(row[" Tasa de intrés mensual "] * 100),
         importeInteres: row[" Importe de Intrés "],
+        cat: catRaw * 100,
       }));
     const quincenas = filas[0]?.plazoQuincenas;
     if (quincenas) tablas[quincenas] = filas;

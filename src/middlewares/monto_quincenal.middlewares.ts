@@ -19,5 +19,12 @@ export function validarMontoQuincenal(
     });
     return;
   }
+  const plazosValidos = [24, 36, 48, 72, 96, 120];
+  if (!plazosValidos.includes(quincenasNum)) {
+    res.status(400).json({
+      error: `quincenas inválido. Valores permitidos: ${plazosValidos.join(", ")}`,
+    });
+    return;
+  }
   next();
 }
