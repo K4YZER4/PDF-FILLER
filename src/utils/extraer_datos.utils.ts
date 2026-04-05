@@ -20,26 +20,27 @@ async function extraerDatosINE(fuente: Buffer) {
         parts: [
           {
             text: `Analiza esta credencial INE mexicana y devuelve ÚNICAMENTE un JSON válido con exactamente esta estructura, sin texto adicional, sin markdown, sin bloques de código:
-            {
-              "nombre": "nombre(s) de pila",
-              "apellidoPaterno": "primer apellido",
-              "apellidoMaterno": "segundo apellido",
-              "sexo": "H o M",
-              "fechaNac": "DD/MM/YYYY",
-              "curp": "18 caracteres",
-              "claveElector": "18 caracteres",
-              "domicilio": {
-                "calle": "solo nombre de la calle sin número",
-                "numeroCasa": "solo el número exterior",
-                "colonia": "nombre de colonia o fraccionamiento sin la palabra FRACC o COL",
-                "codigoPostal": "5 dígitos",
-                "municipio": "nombre del municipio o delegación",
-                "estado": "nombre del estado"
-              },
-              "seccion": "número de sección electoral",
-              "vigencia": "año inicio - año fin o solo año fin",
-              "numEmision": "número de emisión si existe"
-            }`,
+              {
+                "nombre1": "primer nombre de pila solamente",
+                "nombre2": "segundo nombre de pila si existe, si no existe devuelve cadena vacía",
+                "apellidoPaterno": "primer apellido",
+                "apellidoMaterno": "segundo apellido",
+                "sexo": "H o M",
+                "fechaNac": "DD/MM/YYYY",
+                "curp": "18 caracteres",
+                "claveElector": "18 caracteres",
+                "domicilio": {
+                  "calle": "solo nombre de la calle sin número",
+                  "numeroCasa": "solo el número exterior",
+                  "colonia": "nombre de colonia o fraccionamiento sin la palabra FRACC o COL",
+                  "codigoPostal": "5 dígitos",
+                  "municipio": "nombre del municipio o delegación",
+                  "estado": "nombre del estado"
+                },
+                "seccion": "número de sección electoral",
+                "vigencia": "año inicio - año fin o solo año fin",
+                "numEmision": "número de emisión si existe"
+              }`,
           },
           imagePart,
         ],
@@ -51,7 +52,7 @@ async function extraerDatosINE(fuente: Buffer) {
     ? response.text.replace(/```json|```/g, "").trim()
     : "";
   const data = JSON.parse(raw);
-  data.nombreCompleto = `${data.nombre} ${data.apellidoPaterno} ${data.apellidoMaterno}`;
+  data.nombreCompleto = `${data.nombre1} ${data.nombre2} ${data.apellidoPaterno} ${data.apellidoMaterno}`;
   return data;
 }
 export { extraerDatosINE };
