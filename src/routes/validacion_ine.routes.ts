@@ -5,4 +5,4 @@ const router = Router();
 
 router.post("/escanear-ine", upload.single("ine"), escanearINEController);
 
-export default router;
+export { router as routerINE };

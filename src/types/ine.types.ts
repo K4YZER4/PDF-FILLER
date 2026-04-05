@@ -1,5 +1,6 @@
 interface IneData {
-  nombre: string;
+  nombre1: string;
+  nombre2: string;
   apellidoPaterno: string;
   apellidoMaterno: string;
   sexo: "H" | "M";

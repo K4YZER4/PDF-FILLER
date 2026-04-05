@@ -6,4 +6,4 @@ const router = Router();
 
 router.post("/filtrar-tabla", validarMontoQuincenal, filtrarTablaController);
 
-export default router;
+export { router as routerQuincenas };
