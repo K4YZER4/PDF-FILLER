@@ -1,11 +1,14 @@
 import "dotenv/config";
 import { cargarTablas } from "./src/utils/tabla_cargar.utils";
+import path from "path";
 // import dotenv from "dotenv";
 // dotenv.config();
 import express from "express";
 import { routerINE, routerQuincenas, routerPDF } from "./src/routes";
 const app = express();
 cargarTablas();
+app.use(express.static(path.join(__dirname, "./public")));
+
 app.use(express.json());
 app.use("/api/ine", routerINE);
 app.use("/api/monto", routerQuincenas);

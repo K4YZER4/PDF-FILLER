@@ -1,0 +1,2191 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generador de Contratos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ── Design tokens ────────────────────────────── */
+      :root {
+        --font-body: "Inter", "Helvetica Neue", sans-serif;
+        --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+        --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+        --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+        --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+        --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.25rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-10: 2.5rem;
+        --space-12: 3rem;
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+        --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+        /* Light palette */
+        --bg: #f5f5f4;
+        --surface: #ffffff;
+        --surface-2: #f9f9f8;
+        --border: rgba(0, 0, 0, 0.1);
+        --divider: #e5e5e3;
+        --text: #1c1917;
+        --text-muted: #78716c;
+        --text-faint: #a8a29e;
+        --primary: #01696f;
+        --primary-hover: #0c4e54;
+        --primary-active: #0f3638;
+        --primary-tint: #e6f2f2;
+        --primary-text: #ffffff;
+        --error: #dc2626;
+        --error-tint: #fef2f2;
+        --error-border: #fca5a5;
+        --success: #16a34a;
+        --success-tint: #f0fdf4;
+        --warning: #d97706;
+        --warning-tint: #fffbeb;
+        --shadow-sm:
+          0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+      }
+      [data-theme="dark"] {
+        --bg: #0f0f0e;
+        --surface: #1a1a18;
+        --surface-2: #222220;
+        --border: rgba(255, 255, 255, 0.1);
+        --divider: #2a2a28;
+        --text: #e7e5e4;
+        --text-muted: #a8a29e;
+        --text-faint: #57534e;
+        --primary: #4f98a3;
+        --primary-hover: #3d8691;
+        --primary-active: #2d717c;
+        --primary-tint: #1a2d2f;
+        --primary-text: #ffffff;
+        --error: #f87171;
+        --error-tint: #2a1515;
+        --error-border: #7f1d1d;
+        --success: #4ade80;
+        --success-tint: #0f2a18;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+      }
+
+      /* ── Base ────────────────────────────── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        -webkit-font-smoothing: antialiased;
+        scroll-behavior: smooth;
+      }
+      body {
+        min-height: 100dvh;
+        font-family: var(--font-body);
+        font-size: var(--text-sm);
+        color: var(--text);
+        background: var(--bg);
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+      }
+      input,
+      select,
+      textarea,
+      button {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+        background: none;
+        border: none;
+      }
+
+      /* ── Header ────────────────────────────── */
+      .header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--surface);
+        border-bottom: 1px solid var(--divider);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-3) var(--space-6);
+        gap: var(--space-4);
+      }
+      .header-brand {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+      .header-logo {
+        width: 36px;
+        height: 36px;
+        background: var(--primary);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .header-logo svg {
+        color: white;
+      }
+      .header-title {
+        font-size: var(--text-base);
+        font-weight: 600;
+        line-height: 1.2;
+      }
+      .header-sub {
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+      .btn-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        border: 1px solid var(--border);
+        transition:
+          background var(--transition),
+          color var(--transition);
+      }
+      .btn-icon:hover {
+        background: var(--surface-2);
+        color: var(--text);
+      }
+
+      /* ── API Config banner ────────────────────────────── */
+      .api-config {
+        background: var(--warning-tint);
+        border-bottom: 1px solid var(--divider);
+        padding: var(--space-2) var(--space-6);
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        font-size: var(--text-xs);
+        color: var(--warning);
+      }
+      .api-config input {
+        flex: 1;
+        max-width: 280px;
+        padding: var(--space-1) var(--space-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        font-size: var(--text-xs);
+        font-family: "Courier New", monospace;
+        color: var(--text);
+      }
+
+      /* ── Tab nav ────────────────────────────── */
+      .tabs-wrapper {
+        background: var(--surface);
+        border-bottom: 1px solid var(--divider);
+        padding: 0 var(--space-6);
+        display: flex;
+        gap: 0;
+      }
+      .tab-btn {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-5);
+        border-bottom: 2px solid transparent;
+        color: var(--text-muted);
+        font-size: var(--text-sm);
+        font-weight: 500;
+        transition:
+          color var(--transition),
+          border-color var(--transition);
+        position: relative;
+        white-space: nowrap;
+      }
+      .tab-btn:hover {
+        color: var(--text);
+      }
+      .tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+      }
+      .tab-btn .tab-badge {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        transition:
+          background var(--transition),
+          color var(--transition);
+      }
+      .tab-btn.active .tab-badge {
+        background: var(--primary-tint);
+        color: var(--primary);
+        border-color: transparent;
+      }
+      .tab-btn.complete .tab-badge {
+        background: var(--success-tint);
+        color: var(--success);
+        border-color: transparent;
+      }
+
+      /* ── Main content ────────────────────────────── */
+      .main {
+        flex: 1;
+        padding: var(--space-6);
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* ── Section headings ────────────────────────────── */
+      .section-header {
+        margin-bottom: var(--space-5);
+      }
+      .section-title {
+        font-size: var(--text-base);
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: var(--space-1);
+      }
+      .section-desc {
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+      }
+
+      /* ── Cards ────────────────────────────── */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-5);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: var(--space-4);
+      }
+      .card-title {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: var(--space-4);
+        padding-bottom: var(--space-3);
+        border-bottom: 1px solid var(--divider);
+      }
+
+      /* ── Form grid ────────────────────────────── */
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
+      }
+      .form-grid.cols-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .form-grid.cols-1 {
+        grid-template-columns: 1fr;
+      }
+      .col-span-2 {
+        grid-column: span 2;
+      }
+      .col-span-3 {
+        grid-column: span 3;
+      }
+      @media (max-width: 640px) {
+        .form-grid,
+        .form-grid.cols-3 {
+          grid-template-columns: 1fr;
+        }
+        .col-span-2,
+        .col-span-3 {
+          grid-column: span 1;
+        }
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+      }
+      .field label {
+        font-size: var(--text-xs);
+        font-weight: 500;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+      .req {
+        color: var(--error);
+        font-size: 10px;
+      }
+      .field input,
+      .field select,
+      .field textarea {
+        padding: var(--space-2) var(--space-3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--surface-2);
+        color: var(--text);
+        font-size: var(--text-sm);
+        transition:
+          border-color var(--transition),
+          box-shadow var(--transition);
+        width: 100%;
+      }
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.15);
+      }
+      .field input.error,
+      .field select.error {
+        border-color: var(--error);
+        background: var(--error-tint);
+      }
+      .field .err-msg {
+        font-size: var(--text-xs);
+        color: var(--error);
+        display: none;
+      }
+      .field.has-error .err-msg {
+        display: block;
+      }
+      .field input[readonly],
+      .field select[readonly],
+      .field input[disabled] {
+        background: var(--surface);
+        color: var(--text-muted);
+        cursor: default;
+      }
+
+      /* ── INE Upload ────────────────────────────── */
+      .ine-upload-area {
+        border: 2px dashed var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-8);
+        text-align: center;
+        cursor: pointer;
+        transition:
+          border-color var(--transition),
+          background var(--transition);
+        margin-bottom: var(--space-4);
+        position: relative;
+      }
+      .ine-upload-area:hover {
+        border-color: var(--primary);
+        background: var(--primary-tint);
+      }
+      .ine-upload-area.dragging {
+        border-color: var(--primary);
+        background: var(--primary-tint);
+      }
+      .ine-upload-area.has-image {
+        padding: var(--space-3);
+      }
+      .upload-icon {
+        color: var(--text-faint);
+        margin: 0 auto var(--space-3);
+      }
+      .upload-text {
+        font-size: var(--text-sm);
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+      .upload-sub {
+        font-size: var(--text-xs);
+        color: var(--text-faint);
+        margin-top: var(--space-1);
+      }
+      #ine-file-input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+      .ine-preview {
+        display: none;
+        position: relative;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+      }
+      .ine-preview img {
+        width: 100%;
+        max-height: 200px;
+        object-fit: contain;
+        border-radius: var(--radius-md);
+      }
+      .ine-preview-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity var(--transition);
+        border-radius: var(--radius-md);
+      }
+      .ine-preview:hover .ine-preview-overlay {
+        opacity: 1;
+      }
+      .ine-preview-overlay span {
+        color: white;
+        font-size: var(--text-xs);
+        font-weight: 500;
+      }
+
+      /* ── Procesar btn area ────────────────────────────── */
+      .ocr-bar {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        margin-bottom: var(--space-5);
+      }
+      .ocr-status {
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+      .ocr-status.ok {
+        color: var(--success);
+      }
+      .ocr-status.err {
+        color: var(--error);
+      }
+
+      /* ── Buttons ────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-md);
+        font-size: var(--text-sm);
+        font-weight: 500;
+        transition:
+          background var(--transition),
+          color var(--transition),
+          opacity var(--transition);
+        white-space: nowrap;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+        border: 1px solid transparent;
+      }
+      .btn-primary:hover {
+        background: var(--primary-hover);
+      }
+      .btn-primary:active {
+        background: var(--primary-active);
+      }
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-secondary {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .btn-secondary:hover {
+        background: var(--surface-2);
+      }
+      .btn-danger {
+        background: var(--error);
+        color: white;
+        border: 1px solid transparent;
+      }
+      .btn-danger:hover {
+        opacity: 0.9;
+      }
+      .btn-lg {
+        padding: var(--space-3) var(--space-6);
+        font-size: var(--text-base);
+      }
+
+      /* ── Tabla resultado ────────────────────────────── */
+      .tabla-result {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-3);
+        margin-top: var(--space-4);
+      }
+      @media (max-width: 640px) {
+        .tabla-result {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .tabla-stat {
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-4);
+      }
+      .tabla-stat-label {
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+        margin-bottom: var(--space-1);
+      }
+      .tabla-stat-value {
+        font-size: var(--text-base);
+        font-weight: 600;
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
+      }
+      .tabla-stat-value.highlight {
+        color: var(--primary);
+      }
+      .tabla-placeholder {
+        grid-column: span 3;
+        text-align: center;
+        padding: var(--space-8);
+        color: var(--text-faint);
+        font-size: var(--text-sm);
+      }
+      .tabla-plazo-selector {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+        margin-top: var(--space-2);
+      }
+      .plazo-chip {
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-full);
+        border: 1px solid var(--border);
+        font-size: var(--text-xs);
+        font-weight: 500;
+        cursor: pointer;
+        background: var(--surface-2);
+        color: var(--text-muted);
+        transition: all var(--transition);
+      }
+      .plazo-chip:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--primary-tint);
+      }
+      .plazo-chip.selected {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      /* ── Loading spinner ────────────────────────────── */
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid currentColor;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        display: inline-block;
+      }
+
+      /* ── Toast ────────────────────────────── */
+      .toast-container {
+        position: fixed;
+        top: var(--space-6);
+        right: var(--space-6);
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+        pointer-events: none;
+      }
+      .toast {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-4);
+        box-shadow: var(--shadow-lg);
+        font-size: var(--text-xs);
+        max-width: 320px;
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        pointer-events: all;
+        opacity: 0;
+        transform: translateX(12px);
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .toast.success {
+        border-left: 3px solid var(--success);
+      }
+      .toast.error {
+        border-left: 3px solid var(--error);
+      }
+      .toast.info {
+        border-left: 3px solid var(--primary);
+      }
+
+      /* ── Footer bar ────────────────────────────── */
+      .footer-bar {
+        position: sticky;
+        bottom: 0;
+        z-index: 90;
+        background: var(--surface);
+        border-top: 1px solid var(--divider);
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+        padding: var(--space-3) var(--space-6);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-4);
+      }
+      .footer-validation {
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+      }
+      .footer-validation.has-errors {
+        color: var(--error);
+      }
+      .footer-actions {
+        display: flex;
+        gap: var(--space-3);
+      }
+
+      /* ── Required highlight on submit ────────────────────────────── */
+      .validate-highlight .field.required-field:not(.filled) input,
+      .validate-highlight .field.required-field:not(.filled) select {
+        border-color: var(--error);
+        background: var(--error-tint);
+      }
+      .validate-highlight .field.required-field:not(.filled) label {
+        color: var(--error);
+      }
+
+      /* ── Monto input large ────────────────────────────── */
+      .monto-input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: var(--surface-2);
+        transition:
+          border-color var(--transition),
+          box-shadow var(--transition);
+      }
+      .monto-input-wrap:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.15);
+      }
+      .monto-prefix {
+        padding: var(--space-2) var(--space-3);
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: var(--text-sm);
+        white-space: nowrap;
+      }
+      .monto-input-wrap input {
+        flex: 1;
+        padding: var(--space-2) var(--space-3);
+        border: none;
+        background: transparent;
+        font-size: var(--text-base);
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      .monto-input-wrap input:focus {
+        outline: none;
+      }
+      .monto-input-wrap.error {
+        border-color: var(--error);
+        background: var(--error-tint);
+      }
+
+      /* ── Divider ────────────────────────────── */
+      .divider {
+        border: none;
+        border-top: 1px solid var(--divider);
+        margin: var(--space-4) 0;
+      }
+
+      /* ── Badge status ────────────────────────────── */
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: 2px var(--space-2);
+        border-radius: var(--radius-full);
+        font-size: var(--text-xs);
+        font-weight: 500;
+      }
+      .status-badge.ok {
+        background: var(--success-tint);
+        color: var(--success);
+      }
+      .status-badge.pending {
+        background: var(--warning-tint);
+        color: var(--warning);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-brand">
+        <div class="header-logo">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
+        </div>
+        <div>
+          <div class="header-title">Generador de Contratos</div>
+          <div class="header-sub">CREDIFOM, S.A.P.I. de C.V.</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" data-theme-toggle aria-label="Cambiar tema">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- API config bar -->
+    <div class="api-config">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="12" cy="12" r="3" />
+        <path
+          d="M19.07 4.93a10 10 0 0 1 1.41 14.14M4.93 4.93A10 10 0 0 0 3.52 19.07"
+        />
+      </svg>
+      <span>URL del servidor:</span>
+      <input
+        type="text"
+        id="api-base"
+        value="http://localhost:3000"
+        placeholder="http://localhost:3000"
+      />
+      <span id="api-status" class="ocr-status">— sin probar</span>
+      <button
+        class="btn btn-secondary"
+        style="padding: 2px 8px; font-size: 11px"
+        onclick="testConnection()"
+      >
+        Probar
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <nav class="tabs-wrapper" role="tablist">
+      <button
+        class="tab-btn active"
+        data-tab="cliente"
+        role="tab"
+        aria-selected="true"
+      >
+        <span class="tab-badge" id="badge-1">1</span> Cliente (INE)
+      </button>
+      <button class="tab-btn" data-tab="monto" role="tab" aria-selected="false">
+        <span class="tab-badge" id="badge-2">2</span> Monto
+      </button>
+      <button
+        class="tab-btn"
+        data-tab="extras"
+        role="tab"
+        aria-selected="false"
+      >
+        <span class="tab-badge" id="badge-3">3</span> Extras
+      </button>
+    </nav>
+
+    <!-- Main -->
+    <main class="main" id="main-content">
+      <!-- ══ TAB 1: CLIENTE ══ -->
+      <section class="tab-panel active" id="panel-cliente" role="tabpanel">
+        <!-- INE Upload -->
+        <div class="card">
+          <div class="card-title">Fotografía del INE</div>
+          <div class="ine-upload-area" id="ine-drop-zone">
+            <input
+              type="file"
+              id="ine-file-input"
+              accept="image/*"
+              capture="environment"
+            />
+            <div id="upload-placeholder">
+              <svg
+                class="upload-icon"
+                width="40"
+                height="40"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <rect x="3" y="4" width="18" height="16" rx="2" />
+                <circle cx="8.5" cy="9.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg>
+              <p class="upload-text">Arrastra la foto del INE aquí</p>
+              <p class="upload-sub">
+                o haz clic para seleccionar · JPG, PNG · max 10MB
+              </p>
+            </div>
+            <div class="ine-preview" id="ine-preview">
+              <img
+                id="ine-img"
+                src=""
+                alt="Vista previa del INE"
+                width="640"
+                height="200"
+                loading="lazy"
+              />
+              <div class="ine-preview-overlay">
+                <span>Clic para cambiar imagen</span>
+              </div>
+            </div>
+          </div>
+          <div class="ocr-bar">
+            <button
+              class="btn btn-primary"
+              id="btn-procesar-ine"
+              onclick="procesarINE()"
+              disabled
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              Leer INE con OCR
+            </button>
+            <span id="ocr-status" class="ocr-status"
+              >Sube una imagen para continuar</span
+            >
+          </div>
+        </div>
+
+        <!-- Datos personales -->
+        <div class="card">
+          <div class="card-title">Datos Personales</div>
+          <div class="form-grid">
+            <div class="field required-field" data-key="ine.nombre1">
+              <label>Primer Nombre <span class="req">*</span></label>
+              <input type="text" id="ine-nombre1" placeholder="JUAN" />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field" data-key="ine.nombre2">
+              <label>Segundo Nombre</label>
+              <input type="text" id="ine-nombre2" placeholder="CARLOS" />
+            </div>
+            <div class="field required-field" data-key="ine.apellidoPaterno">
+              <label>Apellido Paterno <span class="req">*</span></label>
+              <input
+                type="text"
+                id="ine-apellidoPaterno"
+                placeholder="GARCÍA"
+              />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field required-field" data-key="ine.apellidoMaterno">
+              <label>Apellido Materno <span class="req">*</span></label>
+              <input type="text" id="ine-apellidoMaterno" placeholder="LÓPEZ" />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field required-field" data-key="ine.curp">
+              <label>CURP <span class="req">*</span></label>
+              <input
+                type="text"
+                id="ine-curp"
+                placeholder="GALO800101HSLRPN01"
+                maxlength="18"
+                style="text-transform: uppercase"
+              />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field" data-key="ine.sexo">
+              <label>Sexo</label>
+              <select id="ine-sexo">
+                <option value="">— Seleccionar —</option>
+                <option value="H">H - Hombre</option>
+                <option value="M">M - Mujer</option>
+              </select>
+            </div>
+            <div class="field required-field" data-key="ine.fechaNac">
+              <label
+                >Fecha de Nacimiento <span class="req">*</span>
+                <span style="font-weight: 400; color: var(--text-faint)"
+                  >(DD/MM/AAAA)</span
+                ></label
+              >
+              <input
+                type="text"
+                id="ine-fechaNac"
+                placeholder="01/01/1990"
+                maxlength="10"
+              />
+              <span class="err-msg">Formato: DD/MM/AAAA</span>
+            </div>
+            <div class="field" data-key="ine.claveElector">
+              <label>Clave de Elector</label>
+              <input
+                type="text"
+                id="ine-claveElector"
+                placeholder="GRLPJN90010112H300"
+                maxlength="18"
+                style="text-transform: uppercase"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Domicilio -->
+        <div class="card">
+          <div class="card-title">Domicilio</div>
+          <div class="form-grid">
+            <div
+              class="field required-field col-span-2"
+              data-key="ine.domicilio.calle"
+            >
+              <label>Calle <span class="req">*</span></label>
+              <input
+                type="text"
+                id="ine-calle"
+                placeholder="AV. INSURGENTES SUR"
+              />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div
+              class="field required-field"
+              data-key="ine.domicilio.numeroCasa"
+            >
+              <label>No. Ext <span class="req">*</span></label>
+              <input type="text" id="ine-numeroCasa" placeholder="1234" />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field required-field" data-key="ine.domicilio.colonia">
+              <label>Colonia <span class="req">*</span></label>
+              <input type="text" id="ine-colonia" placeholder="CENTRO" />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div
+              class="field required-field"
+              data-key="ine.domicilio.codigoPostal"
+            >
+              <label>Código Postal <span class="req">*</span></label>
+              <input
+                type="text"
+                id="ine-codigoPostal"
+                placeholder="81000"
+                maxlength="5"
+              />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div
+              class="field required-field"
+              data-key="ine.domicilio.municipio"
+            >
+              <label>Municipio <span class="req">*</span></label>
+              <input type="text" id="ine-municipio" placeholder="GUASAVE" />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field required-field" data-key="ine.domicilio.estado">
+              <label>Estado <span class="req">*</span></label>
+              <input type="text" id="ine-estado" placeholder="SINALOA" />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Datos INE adicionales -->
+        <div class="card">
+          <div class="card-title">Datos INE Adicionales</div>
+          <div class="form-grid cols-3">
+            <div class="field" data-key="ine.seccion">
+              <label>Sección</label>
+              <input
+                type="text"
+                id="ine-seccion"
+                placeholder="1234"
+                maxlength="4"
+              />
+            </div>
+            <div class="field" data-key="ine.vigencia">
+              <label>Vigencia</label>
+              <input
+                type="text"
+                id="ine-vigencia"
+                placeholder="2031"
+                maxlength="4"
+              />
+            </div>
+            <div class="field" data-key="ine.numEmision">
+              <label>Núm. de Emisión</label>
+              <input
+                type="text"
+                id="ine-numEmision"
+                placeholder="01"
+                maxlength="2"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TAB 2: MONTO ══ -->
+      <section class="tab-panel" id="panel-monto" role="tabpanel">
+        <div class="card">
+          <div class="card-title">Solicitud de Crédito</div>
+
+          <div class="form-grid" style="align-items: end">
+            <div
+              class="field required-field col-span-2"
+              data-key="tabla.montoNeto"
+            >
+              <label>Monto Neto (Capital) <span class="req">*</span></label>
+              <div class="monto-input-wrap" id="monto-wrap">
+                <span class="monto-prefix">MXN $</span>
+                <input
+                  type="number"
+                  id="tabla-montoNeto"
+                  placeholder="10,000"
+                  min="1000"
+                  max="200000"
+                  step="500"
+                />
+              </div>
+              <span class="err-msg">Ingresa el monto del crédito</span>
+            </div>
+          </div>
+
+          <div class="field" style="margin-top: var(--space-4)">
+            <label>Plazo (Quincenas) <span class="req">*</span></label>
+            <div class="tabla-plazo-selector" id="plazo-chips">
+              <button
+                class="plazo-chip"
+                data-qnas="24"
+                onclick="selectPlazo(24)"
+              >
+                24 QNAs
+              </button>
+              <button
+                class="plazo-chip"
+                data-qnas="36"
+                onclick="selectPlazo(36)"
+              >
+                36 QNAs
+              </button>
+              <button
+                class="plazo-chip selected"
+                data-qnas="48"
+                onclick="selectPlazo(48)"
+              >
+                48 QNAs
+              </button>
+              <button
+                class="plazo-chip"
+                data-qnas="72"
+                onclick="selectPlazo(72)"
+              >
+                72 QNAs
+              </button>
+              <button
+                class="plazo-chip"
+                data-qnas="96"
+                onclick="selectPlazo(96)"
+              >
+                96 QNAs
+              </button>
+              <button
+                class="plazo-chip"
+                data-qnas="120"
+                onclick="selectPlazo(120)"
+              >
+                120 QNAs
+              </button>
+            </div>
+            <input type="hidden" id="tabla-plazoQuincenas" value="48" />
+          </div>
+
+          <div style="margin-top: var(--space-5)">
+            <button
+              class="btn btn-primary btn-lg"
+              id="btn-consultar"
+              onclick="consultarTabla()"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+              Calcular tabla
+            </button>
+          </div>
+
+          <!-- Resultado tabla -->
+          <hr class="divider" />
+          <div id="tabla-result-area">
+            <div class="tabla-result">
+              <div class="tabla-placeholder" id="tabla-placeholder">
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  style="
+                    margin: 0 auto var(--space-2);
+                    color: var(--text-faint);
+                  "
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M3 9h18M9 21V9" />
+                </svg>
+                Ingresa el monto y plazo, luego presiona "Calcular tabla"
+              </div>
+            </div>
+            <div class="tabla-result" id="tabla-stats" style="display: none">
+              <div class="tabla-stat">
+                <div class="tabla-stat-label">Monto Pagaré</div>
+                <div class="tabla-stat-value highlight" id="stat-montoPagare">
+                  —
+                </div>
+              </div>
+              <div class="tabla-stat">
+                <div class="tabla-stat-label">Descuento Quincenal</div>
+                <div
+                  class="tabla-stat-value highlight"
+                  id="stat-descuentoQuincenal"
+                >
+                  —
+                </div>
+              </div>
+              <div class="tabla-stat">
+                <div class="tabla-stat-label">CAT Anual</div>
+                <div class="tabla-stat-value" id="stat-cat">—</div>
+              </div>
+              <div class="tabla-stat">
+                <div class="tabla-stat-label">Tasa Mensual</div>
+                <div class="tabla-stat-value" id="stat-tasaMensual">—</div>
+              </div>
+              <div class="tabla-stat">
+                <div class="tabla-stat-label">Tasa Anual</div>
+                <div class="tabla-stat-value" id="stat-tasaAnual">—</div>
+              </div>
+              <div class="tabla-stat">
+                <div class="tabla-stat-label">Intereses Totales</div>
+                <div class="tabla-stat-value" id="stat-importeInteres">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monto en letras (readonly, se calcula automático) -->
+        <div class="card" id="card-monto-letras" style="display: none">
+          <div class="card-title">Monto en Letras (auto-generado)</div>
+          <div class="form-grid cols-1">
+            <div class="field">
+              <label>Importe Total con Letra</label>
+              <input type="text" id="monto-letras-val" readonly />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TAB 3: EXTRAS ══ -->
+      <section class="tab-panel" id="panel-extras" role="tabpanel">
+        <!-- Datos del contrato -->
+        <div class="card">
+          <div class="card-title">Datos del Contrato</div>
+          <div class="form-grid cols-3">
+            <div class="field required-field" data-key="extra.folio">
+              <label>Folio <span class="req">*</span></label>
+              <input type="text" id="extra-folio" placeholder="C-2026-001" />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field" data-key="extra.vendedor">
+              <label>Vendedor / Asesor</label>
+              <input
+                type="text"
+                id="extra-vendedor"
+                placeholder="NOMBRE ASESOR"
+              />
+            </div>
+            <div class="field" data-key="extra.estadoCivil">
+              <label>Estado Civil</label>
+              <select id="extra-estadoCivil">
+                <option value="">— Seleccionar —</option>
+                <option value="SOLTERO">Soltero(a)</option>
+                <option value="CASADO">Casado(a)</option>
+                <option value="DIVORCIADO">Divorciado(a)</option>
+                <option value="VIUDO">Viudo(a)</option>
+                <option value="UNION LIBRE">Unión Libre</option>
+              </select>
+            </div>
+            <div class="field" data-key="extra.lugarFecha">
+              <label>Lugar y Fecha</label>
+              <input
+                type="text"
+                id="extra-lugarFecha"
+                placeholder="GUASAVE, SIN."
+              />
+            </div>
+            <div class="field" data-key="extra.fechaContrato">
+              <label>Fecha del Contrato</label>
+              <input type="date" id="extra-fechaContrato" />
+            </div>
+            <div class="field" data-key="extra.inicioQna">
+              <label>Inicio QNA</label>
+              <input type="text" id="extra-inicioQna" placeholder="07/2026" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Datos de contacto -->
+        <div class="card">
+          <div class="card-title">Datos de Contacto</div>
+          <div class="form-grid">
+            <div class="field required-field" data-key="extra.telefonoCelular">
+              <label>Teléfono Celular <span class="req">*</span></label>
+              <input
+                type="tel"
+                id="extra-telefonoCelular"
+                placeholder="6871234567"
+                maxlength="10"
+              />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field" data-key="extra.telefonoCasa">
+              <label>Teléfono Casa</label>
+              <input
+                type="tel"
+                id="extra-telefonoCasa"
+                placeholder="6870000000"
+                maxlength="10"
+              />
+            </div>
+            <div class="field col-span-2" data-key="extra.mail">
+              <label>Correo Electrónico</label>
+              <input
+                type="email"
+                id="extra-mail"
+                placeholder="correo@ejemplo.com"
+              />
+            </div>
+            <div class="field" data-key="extra.rfc">
+              <label>RFC</label>
+              <input
+                type="text"
+                id="extra-rfc"
+                placeholder="XAXX010101000"
+                maxlength="13"
+                style="text-transform: uppercase"
+              />
+            </div>
+            <div class="field" data-key="extra.ingresoMensual">
+              <label>Ingreso Mensual</label>
+              <input
+                type="number"
+                id="extra-ingresoMensual"
+                placeholder="15000"
+                min="0"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Datos laborales -->
+        <div class="card">
+          <div class="card-title">Datos Laborales</div>
+          <div class="form-grid">
+            <div class="field required-field" data-key="extra.dependencia">
+              <label>Dependencia <span class="req">*</span></label>
+              <input type="text" id="extra-dependencia" placeholder="SEPyC" />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field required-field" data-key="extra.empleado">
+              <label>No. Empleado <span class="req">*</span></label>
+              <input type="text" id="extra-empleado" placeholder="12345" />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field" data-key="extra.departamento">
+              <label>Departamento</label>
+              <input
+                type="text"
+                id="extra-departamento"
+                placeholder="EDUCACIÓN"
+              />
+            </div>
+            <div class="field" data-key="extra.puesto">
+              <label>Puesto</label>
+              <input type="text" id="extra-puesto" placeholder="DOCENTE" />
+            </div>
+            <div class="field" data-key="extra.añosAntiguedad">
+              <label>Años de Antigüedad</label>
+              <input
+                type="number"
+                id="extra-añosAntiguedad"
+                placeholder="5"
+                min="0"
+              />
+            </div>
+            <div class="field" data-key="extra.mesesAntiguedad">
+              <label>Meses de Antigüedad</label>
+              <input
+                type="number"
+                id="extra-mesesAntiguedad"
+                placeholder="6"
+                min="0"
+                max="11"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Referencias -->
+        <div class="card">
+          <div class="card-title">Referencias Personales</div>
+          <div class="form-grid">
+            <div class="field required-field" data-key="extra.referencia1">
+              <label>Referencia 1 <span class="req">*</span></label>
+              <input
+                type="text"
+                id="extra-referencia1"
+                placeholder="NOMBRE COMPLETO"
+              />
+              <span class="err-msg">Campo requerido</span>
+            </div>
+            <div class="field" data-key="extra.telefonoReferencia1">
+              <label>Teléfono Ref. 1</label>
+              <input
+                type="tel"
+                id="extra-telefonoReferencia1"
+                placeholder="6871234567"
+                maxlength="10"
+              />
+            </div>
+            <div class="field" data-key="extra.referencia2">
+              <label>Referencia 2</label>
+              <input
+                type="text"
+                id="extra-referencia2"
+                placeholder="NOMBRE COMPLETO"
+              />
+            </div>
+            <div class="field" data-key="extra.telefonoReferencia2">
+              <label>Teléfono Ref. 2</label>
+              <input
+                type="tel"
+                id="extra-telefonoReferencia2"
+                placeholder="6871234567"
+                maxlength="10"
+              />
+            </div>
+            <div class="field" data-key="extra.referencia3">
+              <label>Referencia 3</label>
+              <input
+                type="text"
+                id="extra-referencia3"
+                placeholder="NOMBRE COMPLETO"
+              />
+            </div>
+            <div class="field" data-key="extra.telefonoReferencia3">
+              <label>Teléfono Ref. 3</label>
+              <input
+                type="tel"
+                id="extra-telefonoReferencia3"
+                placeholder="6871234567"
+                maxlength="10"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Datos bancarios -->
+        <div class="card">
+          <div class="card-title">Datos Bancarios (Opcional)</div>
+          <div class="form-grid cols-3">
+            <div class="field" data-key="extra.banco">
+              <label>Banco</label>
+              <input type="text" id="extra-banco" placeholder="BANAMEX" />
+            </div>
+            <div class="field" data-key="extra.numeroCuenta">
+              <label>Número de Cuenta</label>
+              <input
+                type="text"
+                id="extra-numeroCuenta"
+                placeholder="1234567890"
+                maxlength="16"
+              />
+            </div>
+            <div class="field" data-key="extra.clabe">
+              <label>CLABE Interbancaria</label>
+              <input
+                type="text"
+                id="extra-clabe"
+                placeholder="002320701234567890"
+                maxlength="18"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer bar -->
+    <footer class="footer-bar">
+      <span class="footer-validation" id="footer-status"
+        >Completa todos los campos requeridos para continuar.</span
+      >
+      <div class="footer-actions">
+        <button class="btn btn-secondary" onclick="limpiarTodo()">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 1 0 .49-3.85" />
+          </svg>
+          Limpiar todo
+        </button>
+        <button
+          class="btn btn-primary btn-lg"
+          id="btn-generar"
+          onclick="generarContrato()"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="12" y1="18" x2="12" y2="12" />
+            <line x1="9" y1="15" x2="15" y2="15" />
+          </svg>
+          Generar Contrato PDF
+        </button>
+      </div>
+    </footer>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toasts" aria-live="polite"></div>
+
+    <script>
+      /* ── State ──────────────────────────────────── */
+      const state = {
+        ineImageFile: null,
+        tablaData: null,
+        plazoSeleccionado: 48,
+      };
+
+      /* ── Helpers ──────────────────────────────────────── */
+      function apiBase() {
+        return document.getElementById("api-base").value.replace(/\/$/, "");
+      }
+
+      function fmt(n) {
+        return new Intl.NumberFormat("es-MX", {
+          style: "currency",
+          currency: "MXN",
+        }).format(n);
+      }
+
+      function pct(n) {
+        return Number(n).toFixed(2) + "%";
+      }
+
+      function toast(msg, type = "info", ms = 4000) {
+        const c = document.getElementById("toasts");
+        const t = document.createElement("div");
+        t.className = `toast ${type}`;
+        const icons = { success: "✓", error: "✗", info: "ℹ" };
+        t.innerHTML = `<span style="font-weight:600">${icons[type] || "ℹ"}</span> ${msg}`;
+        c.appendChild(t);
+        requestAnimationFrame(() => {
+          t.classList.add("show");
+        });
+        setTimeout(() => {
+          t.classList.remove("show");
+          setTimeout(() => t.remove(), 300);
+        }, ms);
+      }
+
+      function setLoading(btn, loading, label = "") {
+        if (loading) {
+          btn.disabled = true;
+          btn.dataset.orig = btn.innerHTML;
+          btn.innerHTML = `<span class="spinner"></span> ${label || "Cargando..."}`;
+        } else {
+          btn.disabled = false;
+          btn.innerHTML = btn.dataset.orig || btn.innerHTML;
+        }
+      }
+
+      /* ── Numero a letras ──────────────────────────── */
+      const UNIDADES = [
+        "",
+        "UNO",
+        "DOS",
+        "TRES",
+        "CUATRO",
+        "CINCO",
+        "SEIS",
+        "SIETE",
+        "OCHO",
+        "NUEVE",
+        "DIEZ",
+        "ONCE",
+        "DOCE",
+        "TRECE",
+        "CATORCE",
+        "QUINCE",
+        "DIECISÉIS",
+        "DIECISIETE",
+        "DIECIOCHO",
+        "DIECINUEVE",
+      ];
+      const DECENAS = [
+        "",
+        "DIEZ",
+        "VEINTE",
+        "TREINTA",
+        "CUARENTA",
+        "CINCUENTA",
+        "SESENTA",
+        "SETENTA",
+        "OCHENTA",
+        "NOVENTA",
+      ];
+      const CENTENAS = [
+        "",
+        "CIENTO",
+        "DOSCIENTOS",
+        "TRESCIENTOS",
+        "CUATROCIENTOS",
+        "QUINIENTOS",
+        "SEISCIENTOS",
+        "SETECIENTOS",
+        "OCHOCIENTOS",
+        "NOVECIENTOS",
+      ];
+
+      function cens(n) {
+        if (n === 100) return "CIEN";
+        if (n < 20) return UNIDADES[n];
+        if (n < 100) {
+          const u = n % 10;
+          return u === 0
+            ? DECENAS[Math.floor(n / 10)]
+            : `${DECENAS[Math.floor(n / 10)]} Y ${UNIDADES[u]}`;
+        }
+        const r = n % 100;
+        return r === 0
+          ? CENTENAS[Math.floor(n / 100)]
+          : `${CENTENAS[Math.floor(n / 100)]} ${cens(r)}`;
+      }
+      function miles(n) {
+        if (!n) return "";
+        if (n < 1000) return cens(n);
+        const m = Math.floor(n / 1000),
+          r = n % 1000;
+        const p = m === 1 ? "MIL" : `${cens(m)} MIL`;
+        return r === 0 ? p : `${p} ${cens(r)}`;
+      }
+      function numeroALetras(num) {
+        const [ei, di] = Number(num).toFixed(2).split(".");
+        const e = parseInt(ei);
+        const millones = Math.floor(e / 1e6),
+          resto = e % 1e6;
+        let res = "";
+        if (millones === 1) res = "UN MILLÓN ";
+        else if (millones > 1) res = `${cens(millones)} MILLONES `;
+        res += miles(resto);
+        return `${res.trim()} PESOS ${di.padEnd(2, "0")}/100 M.N.`;
+      }
+
+      /* ── Dark mode toggle ──────────────────────────── */
+      (function () {
+        const t = document.querySelector("[data-theme-toggle]"),
+          r = document.documentElement;
+        let d = matchMedia("(prefers-color-scheme:dark)").matches
+          ? "dark"
+          : "light";
+        r.setAttribute("data-theme", d);
+        t &&
+          t.addEventListener("click", () => {
+            d = d === "dark" ? "light" : "dark";
+            r.setAttribute("data-theme", d);
+          });
+      })();
+
+      /* ── Tabs ──────────────────────────────────── */
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach((b) => {
+            b.classList.remove("active");
+            b.setAttribute("aria-selected", "false");
+          });
+          document
+            .querySelectorAll(".tab-panel")
+            .forEach((p) => p.classList.remove("active"));
+          btn.classList.add("active");
+          btn.setAttribute("aria-selected", "true");
+          document
+            .getElementById("panel-" + btn.dataset.tab)
+            .classList.add("active");
+        });
+      });
+
+      /* ── INE Upload ──────────────────────────────────── */
+      const dropZone = document.getElementById("ine-drop-zone");
+      const fileInput = document.getElementById("ine-file-input");
+
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragging");
+      });
+      dropZone.addEventListener("dragleave", () =>
+        dropZone.classList.remove("dragging"),
+      );
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragging");
+        const f = e.dataTransfer.files[0];
+        if (f && f.type.startsWith("image/")) setINEImage(f);
+      });
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files[0]) setINEImage(fileInput.files[0]);
+      });
+
+      function setINEImage(file) {
+        if (file.size > 10 * 1024 * 1024) {
+          toast("La imagen es demasiado grande (máx. 10MB)", "error");
+          return;
+        }
+        state.ineImageFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = document.getElementById("ine-img");
+          img.src = e.target.result;
+          document.getElementById("upload-placeholder").style.display = "none";
+          document.getElementById("ine-preview").style.display = "block";
+          dropZone.classList.add("has-image");
+          document.getElementById("btn-procesar-ine").disabled = false;
+          document.getElementById("ocr-status").textContent =
+            `Imagen lista: ${file.name}`;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      /* ── OCR / Procesar INE ──────────────────────────── */
+      async function procesarINE() {
+        if (!state.ineImageFile) return;
+        const btn = document.getElementById("btn-procesar-ine");
+        const statusEl = document.getElementById("ocr-status");
+        setLoading(btn, true, "Procesando...");
+        statusEl.className = "ocr-status";
+        statusEl.textContent = "Enviando imagen al servidor...";
+
+        try {
+          const fd = new FormData();
+          fd.append("ine", state.ineImageFile);
+          const res = await fetch(`${apiBase()}/api/ine/escanear-ine`, {
+            method: "POST",
+            body: fd,
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          llenarCamposINE(data);
+          statusEl.className = "ocr-status ok";
+          statusEl.textContent =
+            "✓ INE procesado correctamente. Verifica los datos.";
+          toast(
+            "Datos del INE cargados. Revisa que estén correctos.",
+            "success",
+          );
+        } catch (err) {
+          statusEl.className = "ocr-status err";
+          statusEl.textContent = `✗ Error: ${err.message}. Puedes llenar los campos manualmente.`;
+          toast(`Error al procesar INE: ${err.message}`, "error");
+        } finally {
+          setLoading(btn, false);
+        }
+      }
+
+      function llenarCamposINE(d) {
+        const set = (id, val) => {
+          const el = document.getElementById(id);
+          if (el && val) el.value = val;
+        };
+        set("ine-nombre1", d.nombre1);
+        set("ine-nombre2", d.nombre2);
+        set("ine-apellidoPaterno", d.apellidoPaterno);
+        set("ine-apellidoMaterno", d.apellidoMaterno);
+        set("ine-curp", d.curp);
+        set("ine-sexo", d.sexo);
+        set("ine-fechaNac", d.fechaNac);
+        set("ine-claveElector", d.claveElector);
+        set("ine-seccion", d.seccion);
+        set("ine-vigencia", d.vigencia);
+        set("ine-numEmision", d.numEmision);
+        if (d.domicilio) {
+          set("ine-calle", d.domicilio.calle);
+          set("ine-numeroCasa", d.domicilio.numeroCasa);
+          set("ine-colonia", d.domicilio.colonia);
+          set("ine-codigoPostal", d.domicilio.codigoPostal);
+          set("ine-municipio", d.domicilio.municipio);
+          set("ine-estado", d.domicilio.estado);
+        }
+        checkRequiredFields();
+      }
+
+      /* ── Plazo selector ──────────────────────────────────── */
+      function selectPlazo(qnas) {
+        state.plazoSeleccionado = qnas;
+        document.getElementById("tabla-plazoQuincenas").value = qnas;
+        document.querySelectorAll(".plazo-chip").forEach((c) => {
+          c.classList.toggle("selected", parseInt(c.dataset.qnas) === qnas);
+        });
+      }
+
+      /* ── Consultar tabla ──────────────────────────────────── */
+      async function consultarTabla() {
+        const montoEl = document.getElementById("tabla-montoNeto");
+        const monto = parseFloat(montoEl.value);
+        if (!monto || monto < 1000) {
+          document.getElementById("monto-wrap").classList.add("error");
+          toast("Ingresa un monto válido (mínimo $1,000)", "error");
+          montoEl.focus();
+          return;
+        }
+        document.getElementById("monto-wrap").classList.remove("error");
+        const btn = document.getElementById("btn-consultar");
+        setLoading(btn, true, "Consultando...");
+
+        try {
+          const body = { monto, quincenas: state.plazoSeleccionado };
+          const res = await fetch(`${apiBase()}/api/monto/filtrar-tabla`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          mostrarTabla(data.tabla || data);
+          toast("Tabla calculada correctamente", "success");
+        } catch (err) {
+          toast(`Error al consultar tabla: ${err.message}`, "error");
+        } finally {
+          setLoading(btn, false);
+        }
+      }
+
+      function mostrarTabla(t) {
+        state.tablaData = t;
+        document.getElementById("tabla-placeholder").style.display = "none";
+        const stats = document.getElementById("tabla-stats");
+        stats.style.display = "grid";
+
+        document.getElementById("stat-montoPagare").textContent = fmt(
+          t.montoPagare,
+        );
+        document.getElementById("stat-descuentoQuincenal").textContent = fmt(
+          t.descuentoQuincenal,
+        );
+        document.getElementById("stat-cat").textContent = pct(t.cat ?? 0);
+        document.getElementById("stat-tasaMensual").textContent = pct(
+          t.tasaMensual,
+        );
+        document.getElementById("stat-tasaAnual").textContent = pct(
+          t.tasaMensual * 12,
+        );
+        document.getElementById("stat-importeInteres").textContent = fmt(
+          t.importeInteres,
+        );
+
+        const letrasCard = document.getElementById("card-monto-letras");
+        letrasCard.style.display = "block";
+        document.getElementById("monto-letras-val").value = numeroALetras(
+          t.montoPagare,
+        );
+
+        document
+          .getElementById("badge-2")
+          .closest(".tab-btn")
+          .classList.add("complete");
+        checkRequiredFields();
+      }
+
+      /* ── Test connection ──────────────────────────── */
+      async function testConnection() {
+        const el = document.getElementById("api-status");
+        el.textContent = "…";
+        el.className = "ocr-status";
+        try {
+          const res = await fetch(`${apiBase()}/health`, {
+            signal: AbortSignal.timeout(3000),
+          });
+          if (res.ok) {
+            el.textContent = "✓ Conectado";
+            el.className = "ocr-status ok";
+          } else {
+            el.textContent = `✗ HTTP ${res.status}`;
+            el.className = "ocr-status err";
+          }
+        } catch {
+          el.textContent = "✗ Sin conexión";
+          el.className = "ocr-status err";
+        }
+      }
+
+      /* ── Build payload ──────────────────────────── */
+      function buildPayload() {
+        const g = (id) => document.getElementById(id)?.value?.trim() || "";
+        return {
+          ine: {
+            nombre1: g("ine-nombre1"),
+            nombre2: g("ine-nombre2"),
+            apellidoPaterno: g("ine-apellidoPaterno"),
+            apellidoMaterno: g("ine-apellidoMaterno"),
+            curp: g("ine-curp"),
+            sexo: g("ine-sexo"),
+            fechaNac: g("ine-fechaNac"),
+            claveElector: g("ine-claveElector"),
+            seccion: g("ine-seccion"),
+            vigencia: g("ine-vigencia"),
+            numEmision: g("ine-numEmision"),
+            domicilio: {
+              calle: g("ine-calle"),
+              numeroCasa: g("ine-numeroCasa"),
+              colonia: g("ine-colonia"),
+              codigoPostal: g("ine-codigoPostal"),
+              municipio: g("ine-municipio"),
+              estado: g("ine-estado"),
+            },
+          },
+          tabla: state.tablaData
+            ? {
+                ...state.tablaData,
+                montoNeto: parseFloat(
+                  document.getElementById("tabla-montoNeto").value,
+                ),
+                plazoQuincenas: state.plazoSeleccionado,
+              }
+            : null,
+          extra: {
+            folio: g("extra-folio"),
+            vendedor: g("extra-vendedor"),
+            estadoCivil: g("extra-estadoCivil"),
+            lugarFecha: g("extra-lugarFecha"),
+            fechaContrato: g("extra-fechaContrato"),
+            inicioQna: g("extra-inicioQna"),
+            rfc: g("extra-rfc"),
+            telefonoCelular: g("extra-telefonoCelular"),
+            telefonoCasa: g("extra-telefonoCasa"),
+            mail: g("extra-mail"),
+            ingresoMensual: g("extra-ingresoMensual"),
+            dependencia: g("extra-dependencia"),
+            empleado: g("extra-empleado"),
+            departamento: g("extra-departamento"),
+            puesto: g("extra-puesto"),
+            añosAntiguedad: g("extra-añosAntiguedad"),
+            mesesAntiguedad: g("extra-mesesAntiguedad"),
+            referencia1: g("extra-referencia1"),
+            telefonoReferencia1: g("extra-telefonoReferencia1"),
+            referencia2: g("extra-referencia2"),
+            telefonoReferencia2: g("extra-telefonoReferencia2"),
+            referencia3: g("extra-referencia3"),
+            telefonoReferencia3: g("extra-telefonoReferencia3"),
+            banco: g("extra-banco"),
+            numeroCuenta: g("extra-numeroCuenta"),
+            clabe: g("extra-clabe"),
+          },
+        };
+      }
+
+      /* ── Validation ──────────────────────────── */
+      const REQUIRED_FIELDS = [
+        { id: "ine-nombre1", label: "Primer Nombre" },
+        { id: "ine-apellidoPaterno", label: "Apellido Paterno" },
+        { id: "ine-apellidoMaterno", label: "Apellido Materno" },
+        { id: "ine-curp", label: "CURP" },
+        { id: "ine-fechaNac", label: "Fecha de Nacimiento" },
+        { id: "ine-calle", label: "Calle" },
+        { id: "ine-numeroCasa", label: "No. Exterior" },
+        { id: "ine-colonia", label: "Colonia" },
+        { id: "ine-codigoPostal", label: "Código Postal" },
+        { id: "ine-municipio", label: "Municipio" },
+        { id: "ine-estado", label: "Estado" },
+        { id: "extra-folio", label: "Folio" },
+        { id: "extra-telefonoCelular", label: "Teléfono Celular" },
+        { id: "extra-dependencia", label: "Dependencia" },
+        { id: "extra-empleado", label: "No. Empleado" },
+        { id: "extra-referencia1", label: "Referencia 1" },
+      ];
+
+      function checkRequiredFields() {
+        const empty = REQUIRED_FIELDS.filter(
+          (f) => !document.getElementById(f.id)?.value?.trim(),
+        );
+        const hasTabla = !!state.tablaData;
+        const statusEl = document.getElementById("footer-status");
+
+        if (empty.length === 0 && hasTabla) {
+          statusEl.textContent = "✓ Todo listo. Puedes generar el contrato.";
+          statusEl.className = "footer-validation";
+          document
+            .getElementById("badge-1")
+            .closest(".tab-btn")
+            .classList.add("complete");
+          document
+            .getElementById("badge-3")
+            .closest(".tab-btn")
+            .classList.add("complete");
+        } else {
+          const msgs = [];
+          if (!hasTabla) msgs.push('falta calcular la tabla en "Monto"');
+          if (empty.length)
+            msgs.push(`${empty.length} campo(s) requerido(s) vacío(s)`);
+          statusEl.textContent = `Pendiente: ${msgs.join(", ")}.`;
+          statusEl.className = "footer-validation has-errors";
+        }
+      }
+
+      // Check fields on change
+      document.querySelectorAll("input, select").forEach((el) => {
+        el.addEventListener("input", checkRequiredFields);
+        el.addEventListener("change", checkRequiredFields);
+      });
+
+      /* ── Mark required errors on field ────────────────── */
+      function markErrors() {
+        REQUIRED_FIELDS.forEach((f) => {
+          const inp = document.getElementById(f.id);
+          if (!inp) return;
+          const field = inp.closest(".field");
+          if (!inp.value.trim()) {
+            inp.classList.add("error");
+            field && field.classList.add("has-error");
+          } else {
+            inp.classList.remove("error");
+            field && field.classList.remove("has-error");
+          }
+        });
+      }
+
+      /* ── Generar contrato ──────────────────────────── */
+      async function generarContrato() {
+        markErrors();
+        const empty = REQUIRED_FIELDS.filter(
+          (f) => !document.getElementById(f.id)?.value?.trim(),
+        );
+        if (!state.tablaData) {
+          toast('Primero calcula la tabla en la pestaña "Monto"', "error");
+          document.querySelector('[data-tab="monto"]').click();
+          return;
+        }
+        if (empty.length > 0) {
+          toast(
+            `Faltan ${empty.length} campo(s) requerido(s): ${empty
+              .map((f) => f.label)
+              .slice(0, 3)
+              .join(", ")}${empty.length > 3 ? "..." : ""}`,
+            "error",
+            6000,
+          );
+          return;
+        }
+
+        const btn = document.getElementById("btn-generar");
+        setLoading(btn, true, "Generando PDF...");
+
+        try {
+          const payload = buildPayload();
+          const res = await fetch(`${apiBase()}/api/pdf/rellenar-pdf`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) {
+            const errText = await res.text();
+            throw new Error(`HTTP ${res.status}: ${errText}`);
+          }
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          const nombre = [
+            document.getElementById("ine-apellidoPaterno").value,
+            document.getElementById("ine-nombre1").value,
+            document.getElementById("extra-folio").value,
+          ]
+            .filter(Boolean)
+            .join("_")
+            .replace(/\s+/g, "_");
+          a.href = url;
+          a.download = `contrato_${nombre || "nuevo"}.pdf`;
+          a.click();
+          URL.revokeObjectURL(url);
+          toast(
+            "¡Contrato generado y descargado correctamente!",
+            "success",
+            5000,
+          );
+        } catch (err) {
+          toast(`Error al generar contrato: ${err.message}`, "error", 8000);
+          console.error(err);
+        } finally {
+          setLoading(btn, false);
+        }
+      }
+
+      /* ── Limpiar todo ──────────────────────────── */
+      function limpiarTodo() {
+        if (!confirm("¿Seguro que quieres limpiar todos los datos?")) return;
+        document
+          .querySelectorAll('input:not([type="hidden"]), select, textarea')
+          .forEach((el) => {
+            if (el.id === "api-base") return;
+            el.value = "";
+            el.classList.remove("error");
+            el.closest(".field")?.classList.remove("has-error");
+          });
+        // Reset plazo
+        selectPlazo(48);
+        // Reset INE image
+        state.ineImageFile = null;
+        state.tablaData = null;
+        document.getElementById("upload-placeholder").style.display = "";
+        document.getElementById("ine-preview").style.display = "none";
+        document.getElementById("ine-drop-zone").classList.remove("has-image");
+        document.getElementById("btn-procesar-ine").disabled = true;
+        document.getElementById("ocr-status").className = "ocr-status";
+        document.getElementById("ocr-status").textContent =
+          "Sube una imagen para continuar";
+        document.getElementById("tabla-stats").style.display = "none";
+        document.getElementById("tabla-placeholder").style.display = "";
+        document.getElementById("card-monto-letras").style.display = "none";
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("complete"));
+        checkRequiredFields();
+        toast("Formulario limpiado", "info");
+      }
+
+      /* ── Auto-fill fecha contrato ──────────────────── */
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("extra-fechaContrato").value = today;
+      document.getElementById("extra-lugarFecha").value = "GUASAVE, SIN.";
+
+      /* ── Init ──────────────────────────────── */
+      checkRequiredFields();
+    </script>
+  </body>
+</html>
