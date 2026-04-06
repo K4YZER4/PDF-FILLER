@@ -1,9 +1,17 @@
-// src/services/rellenar_pdf.services.ts
 import { rellenarCamposPDF } from "../utils/rellenar_pdf.utils";
 import { ContratoData } from "../types";
+import { numeroALetras } from "../utils/numero_letras.utils";
 
 export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
-  const { ine, tabla, extra } = contrato; // ← desestructuras aquí
+  const { ine, tabla, extra } = contrato;
+
+  // ── Separar centavos ──────────────────────────
+  const [montoEnt, montoCent] = tabla.montoNeto.toFixed(2).split(".");
+  const [pagareEnt, pagareCent] = tabla.montoPagare.toFixed(2).split(".");
+  const [descEnt, descCent] = tabla.descuentoQuincenal.toFixed(2).split(".");
+
+  // ── Fecha del contrato ────────────────────────
+  const fecha = extra.fechaContrato?.split("/") ?? ["", "", ""];
 
   const camposPDF: Record<string, string> = {
     // ── INE ──────────────────────────────────────
@@ -28,35 +36,55 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
     "NOMBRE COMPLETO":
       `${ine.nombre1} ${ine.nombre2} ${ine.apellidoPaterno} ${ine.apellidoMaterno}`.trim(),
 
-    // ── Tabla ────────────────────────────────────
-    "MONTO CAPITAL": String(tabla.montoNeto),
-    "MONTO TOTAL": String(tabla.montoPagare),
-    DESCUENTO: String(tabla.descuentoQuincenal),
+    // ── Tabla ─────────────────────────────────────
+    "MONTO CAPITAL": montoEnt,
+    CENT1: montoCent,
+    "MONTO TOTAL": pagareEnt,
+    CENT2: pagareCent,
+    DESCUENTO: descEnt,
+    CENT3: descCent,
     "TASA ANUAL": String(tabla.tasaMensual * 12),
-    // Agregar en la sección tabla del service:
     CAT: String(tabla.cat),
-    QNA: String(tabla.plazoQuincenas), // quincenal count
+    QNA: String(tabla.plazoQuincenas),
     "PLAZO LETRA": `${tabla.plazoQuincenas} QUINCENAS`,
+    "MONTO TOTAL LETRA": numeroALetras(tabla.montoPagare),
+    "DESCUENTO LETRA": numeroALetras(tabla.descuentoQuincenal),
 
-    // ── Extra con defaults de prueba ─────────────
-    FOLIO: extra.folio ?? "TEST-001",
-    RFC: extra.rfc ?? "XAXX010101000",
-    "TELEFONO CELULAR": extra.telefonoCelular ?? "6671234567",
-    "TELEFONO CASA": extra.telefonoCasa ?? "6671234567",
-    MAIL: extra.mail ?? "test@test.com",
-    "INGRESO MENSUAL": extra.ingresoMensual ?? "10000",
-    DEPENDENCIA: extra.dependencia ?? "SEPyC",
-    EMPLEADO: extra.empleado ?? "12345",
-    DEPARTAMENTO: extra.departamento ?? "EDUCACION",
-    PUESTO: extra.puesto ?? "DOCENTE",
-    MESES: extra.mesesAntiguedad ?? "6",
-    AÑOS: extra.añosAntiguedad ?? "5",
-    "REFERENCIA 1": extra.referencia1 ?? "REF TEST 1",
-    "REFERENCIA 2": extra.referencia2 ?? "REF TEST 2",
-    "REFERENCIA 3": extra.referencia3 ?? "REF TEST 3",
-    "NUMERO CUENTA": extra.numeroCuenta ?? "1234567890",
-    "CLABE INTERBANCARIA": extra.clabe ?? "002320701234567890",
-    "LUGAR Y FECHA": extra.lugarFecha ?? "GUASAVE, SIN.",
+    // ── Fecha contrato ────────────────────────────
+    DIA: fecha[0],
+    MES: fecha[1],
+    AÑO: fecha[2],
+    "MES DESCUENTO": extra.mesDescuento ?? "",
+    "AÑO DESCUENTO": extra.añoDescuento ?? "",
+    "INICIO QNA": extra.inicioQna ?? "",
+
+    // ── Extra ─────────────────────────────────────
+    FOLIO: extra.folio ?? "",
+    RFC: extra.rfc ?? "",
+    VENDEDOR: extra.vendedor ?? "",
+    "TELEFONO CELULAR": extra.telefonoCelular ?? "",
+    "TELEFONO CASA": extra.telefonoCasa ?? "",
+    MAIL: extra.mail ?? "",
+    "INGRESO MENSUAL": extra.ingresoMensual ?? "",
+    DEPENDENCIA: extra.dependencia ?? "",
+    EMPLEADO: extra.empleado ?? "",
+    DEPARTAMENTO: extra.departamento ?? "",
+    PUESTO: extra.puesto ?? "",
+    MESES: extra.mesesAntiguedad ?? "",
+    AÑOS: extra.añosAntiguedad ?? "",
+    "REFERENCIA 1": extra.referencia1 ?? "",
+    "REFERENCIA 2": extra.referencia2 ?? "",
+    "REFERENCIA 3": extra.referencia3 ?? "",
+    Texto46: extra.telefonoReferencia1 ?? "",
+    Texto47: extra.telefonoReferencia2 ?? "",
+    Texto48: extra.telefonoReferencia3 ?? "",
+    "NUMERO CUENTA": extra.numeroCuenta ?? "",
+    "CLABE INTERBANCARIA": extra.clabe ?? "",
+    "LUGAR Y FECHA": extra.lugarFecha ?? "",
+
+    // ── Dropdowns ────────────────────────────────
+    ECIVIL: extra.estadoCivil ?? "SOLTERO",
+    BANCOS: extra.banco ?? "",
   };
 
   return rellenarCamposPDF(camposPDF);
