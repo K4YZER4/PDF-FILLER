@@ -3,6 +3,7 @@
     <img src="https://img.shields.io/badge/🇺🇸_Read_in_English-006494?style=for-the-badge&logo=readme&logoColor=white" alt="Read in English"/>
   </a>
 </div>
+
 # PDF Filler — Generador de Contratos de Descuento Vía Nómina
 
 Servicio backend que automatiza el ciclo completo de contratos de descuento vía nómina para instituciones financieras — desde leer la INE del cliente mediante OCR, hasta calcular la tabla de crédito desde un Excel, hasta generar el PDF listo para firmar.

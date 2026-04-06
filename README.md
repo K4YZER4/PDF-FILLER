@@ -3,6 +3,7 @@
     <img src="https://img.shields.io/badge/🇲🇽_Leer_en_Español-01696f?style=for-the-badge&logo=readme&logoColor=white" alt="Leer en Español"/>
   </a>
 </div>
+
 # PDF Filler — Payroll Discount Contract Generator
 
 Backend service that automates the full lifecycle of payroll discount consent contracts for financial institutions — from reading a client's Mexican ID via OCR, to calculating the loan table from an Excel file, to generating a ready-to-sign PDF contract.
