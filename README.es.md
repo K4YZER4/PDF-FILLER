@@ -5,8 +5,6 @@
 </div>
 # PDF Filler — Generador de Contratos de Descuento Vía Nómina
 
-> 📄 English version: [README.md](./README.md)
-
 Servicio backend que automatiza el ciclo completo de contratos de descuento vía nómina para instituciones financieras — desde leer la INE del cliente mediante OCR, hasta calcular la tabla de crédito desde un Excel, hasta generar el PDF listo para firmar.
 
 Desarrollado para uso real en producción en **Credifom, S.A.P.I. de C.V., S.O.F.O.M., E.N.R.**

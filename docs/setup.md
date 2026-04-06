@@ -32,6 +32,15 @@ cp .env.example .env
 | -------- | ------- | -------------------------- |
 | `PORT`   | `3000`  | Port the server listens on |
 
+## Helper scripts
+
+```bash
+# Lists all named form fields and their types from the PDF template
+npx ts-node scripts/listar_campos.ts
+```
+
+Useful when you need to map new fields from the contract template.
+
 ## Required files
 
 Place these in the project root before running:

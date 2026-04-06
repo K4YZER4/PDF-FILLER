@@ -5,8 +5,6 @@
 </div>
 # PDF Filler — Payroll Discount Contract Generator
 
-> 📄 Versión en español: [README.es.md](./README.es.md)
-
 Backend service that automates the full lifecycle of payroll discount consent contracts for financial institutions — from reading a client's Mexican ID via OCR, to calculating the loan table from an Excel file, to generating a ready-to-sign PDF contract.
 
 Built for real-world production use at **Credifom, S.A.P.I. de C.V., S.O.F.O.M., E.N.R.**

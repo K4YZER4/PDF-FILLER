@@ -42,7 +42,8 @@ PDF-FILLER/
 ├── public/
 │   └── generador.html                # Frontend — 3-tab form (Client · Amount · Extras)
 │
-├── scripts/                          # Utility / maintenance scripts
+├── scripts/    # Utility / maintenance scripts
+│   └── listar_campos.ts   # Prints all named PDF form fields + their type. Run before mapping new fields.
 ├── contrato.pdf                      # PDF template (not committed)
 ├── *.xlsx                            # Discount tables (not committed)
 └── spa.traineddata                   # Tesseract Spanish model (not committed)
