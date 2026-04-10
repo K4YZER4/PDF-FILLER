@@ -1,17 +1,23 @@
-import { rellenarCamposPDF } from "../utils/rellenar_pdf.utils";
+import { rellenarCamposPDF, fechaMesConLetra } from "../utils/index";
 import { ContratoData } from "../types";
-import { numeroALetras } from "../utils/numero_letras.utils";
+import {
+  numeroALetrasPesos,
+  numeroALetras,
+} from "../utils/numero_letras.utils";
 
 export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
   const { ine, tabla, extra } = contrato;
-
+  console.error("Extra:", contrato);
   // ── Separar centavos ──────────────────────────
   const [montoEnt, montoCent] = tabla.montoNeto.toFixed(2).split(".");
   const [pagareEnt, pagareCent] = tabla.montoPagare.toFixed(2).split(".");
   const [descEnt, descCent] = tabla.descuentoQuincenal.toFixed(2).split(".");
 
   // ── Fecha del contrato ────────────────────────
-  const fecha = extra.fechaContrato?.split("/") ?? ["", "", ""];
+  // ── Fecha del contrato ────────────────────────
+  const fechaontrato = fechaMesConLetra(extra.fechaContrato ?? "");
+  const fechaArranque = fechaMesConLetra(extra.fechaArranque ?? "");
+  // Agregar arriba, antes de la función
 
   const camposPDF: Record<string, string> = {
     // ── INE ──────────────────────────────────────
@@ -37,39 +43,46 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
       `${ine.nombre1} ${ine.nombre2} ${ine.apellidoPaterno} ${ine.apellidoMaterno}`.trim(),
 
     // ── Tabla ─────────────────────────────────────
-    "MONTO CAPITAL": montoEnt,
+    "MONTO CAPITAL": `$${montoEnt}`,
     CENT1: montoCent,
-    "MONTO TOTAL": pagareEnt,
+    "MONTO TOTAL": `$${pagareEnt}`,
     CENT2: pagareCent,
     DESCUENTO: descEnt,
     CENT3: descCent,
     "TASA ANUAL": String(tabla.tasaMensual * 12),
-    CAT: String(tabla.cat),
-    QNA: String(tabla.plazoQuincenas),
-    "PLAZO LETRA": `${tabla.plazoQuincenas} QUINCENAS`,
-    "MONTO TOTAL LETRA": numeroALetras(tabla.montoPagare),
-    "DESCUENTO LETRA": numeroALetras(tabla.descuentoQuincenal),
+    CAT: String(tabla.cat.toFixed(2)),
+    PLAZO1: `${tabla.plazoQuincenas}`,
+    "PLAZO LETRA": numeroALetras(tabla.plazoQuincenas),
+    "MONTO TOTAL LETRA": numeroALetrasPesos(tabla.montoPagare).split(
+      " PESOS",
+    )[0], // Solo la parte en letras, sin "PESOS"
+    "DESCUENTO LETRA": numeroALetrasPesos(tabla.descuentoQuincenal).split(
+      "PESOS",
+    )[0],
 
     // ── Fecha contrato ────────────────────────────
-    DIA: fecha[0],
-    MES: fecha[1],
-    AÑO: fecha[2],
+    DIA: fechaontrato.dia,
+    MES: fechaontrato.mesLetra,
+    AÑO: fechaontrato.año,
     "MES DESCUENTO": extra.mesDescuento ?? "",
     "AÑO DESCUENTO": extra.añoDescuento ?? "",
-    "INICIO QNA": extra.inicioQna ?? "",
+    // "INICIO QNA": extra.inicioQna ?? "",
 
     // ── Extra ─────────────────────────────────────
+    QNA: String(
+      ` ${fechaArranque.dia} ${fechaArranque.mesLetra}${fechaArranque.año}`,
+    ),
     FOLIO: extra.folio ?? "",
     RFC: extra.rfc ?? "",
     VENDEDOR: extra.vendedor ?? "",
     "TELEFONO CELULAR": extra.telefonoCelular ?? "",
     "TELEFONO CASA": extra.telefonoCasa ?? "",
     MAIL: extra.mail ?? "",
-    "INGRESO MENSUAL": extra.ingresoMensual ?? "",
+    "INGRESO MENSUAL": `$${extra.ingresoMensual ?? ""}`,
     DEPENDENCIA: extra.dependencia ?? "",
-    EMPLEADO: extra.empleado ?? "",
-    DEPARTAMENTO: extra.departamento ?? "",
-    PUESTO: extra.puesto ?? "",
+    EMPLEADO: extra.empleado?.toUpperCase() ?? "",
+    DEPARTAMENTO: extra.departamento?.toUpperCase() ?? "",
+    PUESTO: extra.puesto?.toUpperCase() ?? "",
     MESES: extra.mesesAntiguedad ?? "",
     AÑOS: extra.añosAntiguedad ?? "",
     "REFERENCIA 1": extra.referencia1 ?? "",
@@ -80,7 +93,11 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
     Texto48: extra.telefonoReferencia3 ?? "",
     "NUMERO CUENTA": extra.numeroCuenta ?? "",
     "CLABE INTERBANCARIA": extra.clabe ?? "",
-    "LUGAR Y FECHA": extra.lugarFecha ?? "",
+    "LUGAR Y FECHA":
+      (
+        `${extra.lugarFecha?.toUpperCase()}` +
+        ` ${fechaontrato.dia} ${fechaontrato.mesLetra}${fechaontrato.año}`
+      ).trim() ?? "",
 
     // ── Dropdowns ────────────────────────────────
     ECIVIL: extra.estadoCivil ?? "SOLTERO",

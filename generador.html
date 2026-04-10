@@ -1332,9 +1332,9 @@
               <label>Fecha del Contrato</label>
               <input type="date" id="extra-fechaContrato" />
             </div>
-            <div class="field" data-key="extra.fechaArranque">
-              <label>Fecha de Arranque</label>
-              <input type="date" id="extra-fechaArranque" />
+            <div class="field" data-key="extra.inicioQna">
+              <label>Inicio QNA</label>
+              <input type="text" id="extra-inicioQna" placeholder="07/2026" />
             </div>
           </div>
         </div>
@@ -1398,15 +1398,7 @@
           <div class="form-grid">
             <div class="field required-field" data-key="extra.dependencia">
               <label>Dependencia <span class="req">*</span></label>
-              <select id="extra-dependencia">
-                <option value="">Seleccionar</option>
-                <option value="GOBIERNO DEL ESTADO DE SINALOA">
-                  Gobierno del Estado de Sinaloa
-                </option>
-                <option value="MAGISTERIO DE SINALOA">
-                  Magisterio de Sinaloa
-                </option>
-              </select>
+              <input type="text" id="extra-dependencia" placeholder="SEPyC" />
               <span class="err-msg">Campo requerido</span>
             </div>
             <div class="field required-field" data-key="extra.empleado">
@@ -1994,7 +1986,7 @@
             estadoCivil: g("extra-estadoCivil"),
             lugarFecha: g("extra-lugarFecha"),
             fechaContrato: g("extra-fechaContrato"),
-            fechaArranque: g("extra-fechaArranque"),
+            inicioQna: g("extra-inicioQna"),
             rfc: g("extra-rfc"),
             telefonoCelular: g("extra-telefonoCelular"),
             telefonoCasa: g("extra-telefonoCasa"),

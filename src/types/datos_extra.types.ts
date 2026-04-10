@@ -36,9 +36,8 @@ interface DatosExtra {
   fechaContrato?: string;
   mesDescuento?: string;
   añoDescuento?: string;
-  inicioQna?: string;
   vendedor?: string;
-
+  fechaArranque?: string;
   // Personal
   estadoCivil?: string;
 }

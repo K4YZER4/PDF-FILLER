@@ -71,7 +71,7 @@ function convertirMiles(n: number): string {
   return resto === 0 ? prefijo : `${prefijo} ${convertirCentenas(resto)}`;
 }
 
-export function numeroALetras(num: number): string {
+function numeroALetrasPesos(num: number): string {
   const [enteroStr, decStr] = num.toFixed(2).split(".");
   const entero = parseInt(enteroStr);
   const centavos = decStr.padEnd(2, "0");
@@ -89,3 +89,13 @@ export function numeroALetras(num: number): string {
 
   return `${resultado.trim()} PESOS ${centavos}/100 M.N.`;
 }
+function numeroALetras(num: number): string {
+  const entero = Math.floor(num);
+  if (entero === 0) return "CERO";
+
+  let resultado = "";
+  resultado += convertirMiles(entero);
+
+  return resultado.trim();
+}
+export { numeroALetrasPesos, numeroALetras };
