@@ -8,7 +8,7 @@
 
 Servicio backend que automatiza el ciclo completo de contratos de descuento vía nómina para instituciones financieras — desde leer la INE del cliente mediante OCR, hasta calcular la tabla de crédito desde un Excel, hasta generar el PDF listo para firmar.
 
-Desarrollado para uso real en producción en **Credifom, S.A.P.I. de C.V., S.O.F.O.M., E.N.R.**
+Desarrollado para uso real en producción
 
 ![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=nodedotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)

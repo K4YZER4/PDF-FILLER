@@ -8,7 +8,7 @@
 
 Backend service that automates the full lifecycle of payroll discount consent contracts for financial institutions — from reading a client's Mexican ID via OCR, to calculating the loan table from an Excel file, to generating a ready-to-sign PDF contract.
 
-Built for real-world production use at **Credifom, S.A.P.I. de C.V., S.O.F.O.M., E.N.R.**
+Built for real-world production
 
 ![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=nodedotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
