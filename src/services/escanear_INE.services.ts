@@ -1,13 +1,13 @@
-import { extraerDatosINE } from "../utils/extraer_datos.utils";
+import { extraerDatosINE } from "../clients/extraerDatos.clients";
 import { validarCURP } from "../utils/validar_curp.utils";
 import { IneValida } from "../types";
 //import { GoogleGenAI, genAI } from '@google/genai';
 //const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }).models;
 async function escanearINE(fuente: Buffer): Promise<IneValida> {
-  console.log("🔍 Enviando a Gemini...");
+  console.log(" Enviando a Gemini...");
   const datos = await extraerDatosINE(fuente);
 
-  console.log("✅ Validando CURP...");
+  console.log(" Validando CURP...");
   const curpValidada = await validarCURP(datos.curp);
 
   return { ...datos, curpValidada };
