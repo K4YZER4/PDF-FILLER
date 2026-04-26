@@ -4,7 +4,7 @@ export function validarRellenarPDF(
   res: Response,
   next: NextFunction,
 ) {
-  const { ine, tabla, extra } = req.body;
+  const { ine, tabla, extra, estadoCuenta, nomina } = req.body;
   if (!ine || !tabla || !extra) {
     res
       .status(400)

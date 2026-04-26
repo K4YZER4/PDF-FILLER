@@ -12,10 +12,6 @@ interface DatosExtra {
   ingresoMensual?: string;
 
   // Empleo
-  dependencia?: string;
-  empleado?: string;
-  departamento?: string;
-  puesto?: string;
   mesesAntiguedad?: string;
   añosAntiguedad?: string;
 
@@ -26,11 +22,6 @@ interface DatosExtra {
   telefonoReferencia1?: string;
   telefonoReferencia2?: string;
   telefonoReferencia3?: string;
-  // Bancario
-  numeroCuenta?: string;
-  clabe?: string;
-  banco?: string;
-
   // Contrato
   lugarFecha?: string;
   fechaContrato?: string;
@@ -38,6 +29,8 @@ interface DatosExtra {
   añoDescuento?: string;
   vendedor?: string;
   fechaArranque?: string;
+  sucursal?: string;
+  numVendedor?: string;
   // Personal
   estadoCivil?: string;
 }

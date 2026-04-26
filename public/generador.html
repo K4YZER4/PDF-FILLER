@@ -11,14 +11,12 @@
       rel="stylesheet"
     />
     <style>
-      /* ── Design tokens ────────────────────────────── */
       :root {
         --font-body: "Inter", "Helvetica Neue", sans-serif;
         --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
         --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
         --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
         --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
-        --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
         --space-1: 0.25rem;
         --space-2: 0.5rem;
         --space-3: 0.75rem;
@@ -26,14 +24,12 @@
         --space-5: 1.25rem;
         --space-6: 1.5rem;
         --space-8: 2rem;
-        --space-10: 2.5rem;
         --space-12: 3rem;
         --radius-sm: 0.375rem;
         --radius-md: 0.5rem;
         --radius-lg: 0.75rem;
-        --radius-xl: 1rem;
+        --radius-full: 9999px;
         --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
-        /* Light palette */
         --bg: #f5f5f4;
         --surface: #ffffff;
         --surface-2: #f9f9f8;
@@ -46,7 +42,6 @@
         --primary-hover: #0c4e54;
         --primary-active: #0f3638;
         --primary-tint: #e6f2f2;
-        --primary-text: #ffffff;
         --error: #dc2626;
         --error-tint: #fef2f2;
         --error-border: #fca5a5;
@@ -72,7 +67,6 @@
         --primary-hover: #3d8691;
         --primary-active: #2d717c;
         --primary-tint: #1a2d2f;
-        --primary-text: #ffffff;
         --error: #f87171;
         --error-tint: #2a1515;
         --error-border: #7f1d1d;
@@ -81,8 +75,6 @@
         --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
         --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
       }
-
-      /* ── Base ────────────────────────────── */
       *,
       *::before,
       *::after {
@@ -120,7 +112,6 @@
         border: none;
       }
 
-      /* ── Header ────────────────────────────── */
       .header {
         position: sticky;
         top: 0;
@@ -184,7 +175,6 @@
         color: var(--text);
       }
 
-      /* ── API Config banner ────────────────────────────── */
       .api-config {
         background: var(--warning-tint);
         border-bottom: 1px solid var(--divider);
@@ -194,6 +184,7 @@
         gap: var(--space-3);
         font-size: var(--text-xs);
         color: var(--warning);
+        flex-wrap: wrap;
       }
       .api-config input {
         flex: 1;
@@ -207,13 +198,12 @@
         color: var(--text);
       }
 
-      /* ── Tab nav ────────────────────────────── */
       .tabs-wrapper {
         background: var(--surface);
         border-bottom: 1px solid var(--divider);
         padding: 0 var(--space-6);
         display: flex;
-        gap: 0;
+        overflow-x: auto;
       }
       .tab-btn {
         display: flex;
@@ -227,7 +217,6 @@
         transition:
           color var(--transition),
           border-color var(--transition);
-        position: relative;
         white-space: nowrap;
       }
       .tab-btn:hover {
@@ -237,7 +226,7 @@
         color: var(--primary);
         border-bottom-color: var(--primary);
       }
-      .tab-btn .tab-badge {
+      .tab-badge {
         width: 20px;
         height: 20px;
         border-radius: 50%;
@@ -263,8 +252,22 @@
         color: var(--success);
         border-color: transparent;
       }
+      .tab-btn.scanning .tab-badge {
+        background: var(--warning-tint);
+        color: var(--warning);
+        border-color: transparent;
+        animation: pulse 1.2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
 
-      /* ── Main content ────────────────────────────── */
       .main {
         flex: 1;
         padding: var(--space-6);
@@ -279,22 +282,6 @@
         display: block;
       }
 
-      /* ── Section headings ────────────────────────────── */
-      .section-header {
-        margin-bottom: var(--space-5);
-      }
-      .section-title {
-        font-size: var(--text-base);
-        font-weight: 600;
-        color: var(--text);
-        margin-bottom: var(--space-1);
-      }
-      .section-desc {
-        font-size: var(--text-xs);
-        color: var(--text-muted);
-      }
-
-      /* ── Cards ────────────────────────────── */
       .card {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -312,9 +299,11 @@
         margin-bottom: var(--space-4);
         padding-bottom: var(--space-3);
         border-bottom: 1px solid var(--divider);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
 
-      /* ── Form grid ────────────────────────────── */
       .form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -342,7 +331,6 @@
           grid-column: span 1;
         }
       }
-
       .field {
         display: flex;
         flex-direction: column;
@@ -355,6 +343,7 @@
         display: flex;
         align-items: center;
         gap: var(--space-1);
+        flex-wrap: wrap;
       }
       .req {
         color: var(--error);
@@ -375,16 +364,10 @@
         width: 100%;
       }
       .field input:focus,
-      .field select:focus,
-      .field textarea:focus {
+      .field select:focus {
         outline: none;
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.15);
-      }
-      .field input.error,
-      .field select.error {
-        border-color: var(--error);
-        background: var(--error-tint);
+        box-shadow: 0 0 0 3px rgba(1, 105, 111, 0.12);
       }
       .field .err-msg {
         font-size: var(--text-xs);
@@ -394,53 +377,47 @@
       .field.has-error .err-msg {
         display: block;
       }
-      .field input[readonly],
-      .field select[readonly],
-      .field input[disabled] {
-        background: var(--surface);
-        color: var(--text-muted);
-        cursor: default;
+
+      .autofill-badge {
+        font-size: 10px;
+        font-weight: 600;
+        padding: 1px 6px;
+        border-radius: var(--radius-full);
+        background: var(--success-tint);
+        color: var(--success);
+        border: 1px solid rgba(22, 163, 74, 0.2);
+      }
+      .field input.autofilled {
+        border-color: rgba(22, 163, 74, 0.4);
+        background: var(--success-tint);
       }
 
-      /* ── INE Upload ────────────────────────────── */
-      .ine-upload-area {
+      .upload-area {
         border: 2px dashed var(--border);
         border-radius: var(--radius-lg);
-        padding: var(--space-8);
+        padding: var(--space-6) var(--space-4);
         text-align: center;
         cursor: pointer;
         transition:
           border-color var(--transition),
           background var(--transition);
-        margin-bottom: var(--space-4);
         position: relative;
+        min-height: 110px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
-      .ine-upload-area:hover {
+      .upload-area:hover,
+      .upload-area.dragging {
         border-color: var(--primary);
         background: var(--primary-tint);
       }
-      .ine-upload-area.dragging {
-        border-color: var(--primary);
-        background: var(--primary-tint);
+      .upload-area.has-file {
+        border-color: var(--success);
+        background: var(--success-tint);
       }
-      .ine-upload-area.has-image {
-        padding: var(--space-3);
-      }
-      .upload-icon {
-        color: var(--text-faint);
-        margin: 0 auto var(--space-3);
-      }
-      .upload-text {
-        font-size: var(--text-sm);
-        font-weight: 500;
-        color: var(--text-muted);
-      }
-      .upload-sub {
-        font-size: var(--text-xs);
-        color: var(--text-faint);
-        margin-top: var(--space-1);
-      }
-      #ine-file-input {
+      .upload-area input[type="file"] {
         position: absolute;
         inset: 0;
         opacity: 0;
@@ -448,15 +425,92 @@
         width: 100%;
         height: 100%;
       }
-      .ine-preview {
-        display: none;
+      .upload-icon {
+        color: var(--text-faint);
+        margin: 0 auto var(--space-2);
+      }
+      .upload-text {
+        font-size: var(--text-xs);
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+      .upload-sub {
+        font-size: 11px;
+        color: var(--text-faint);
+        margin-top: 2px;
+      }
+      .upload-filename {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--success);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+      }
+
+      .upload-grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: var(--space-4);
+        margin-bottom: var(--space-4);
+      }
+      .upload-card {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+      .upload-card-label {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      @media (max-width: 640px) {
+        .upload-grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .scan-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: var(--text-xs);
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: var(--radius-full);
+      }
+      .scan-status.idle {
+        background: var(--surface-2);
+        color: var(--text-faint);
+        border: 1px solid var(--border);
+      }
+      .scan-status.scanning {
+        background: var(--warning-tint);
+        color: var(--warning);
+        border: 1px solid rgba(217, 119, 6, 0.2);
+      }
+      .scan-status.done {
+        background: var(--success-tint);
+        color: var(--success);
+        border: 1px solid rgba(22, 163, 74, 0.2);
+      }
+      .scan-status.error-status {
+        background: var(--error-tint);
+        color: var(--error);
+        border: 1px solid var(--error-border);
+      }
+
+      .ine-preview-wrap {
         position: relative;
         border-radius: var(--radius-md);
         overflow: hidden;
       }
-      .ine-preview img {
+      .ine-preview-wrap img {
         width: 100%;
-        max-height: 200px;
+        max-height: 180px;
         object-fit: contain;
         border-radius: var(--radius-md);
       }
@@ -469,9 +523,8 @@
         justify-content: center;
         opacity: 0;
         transition: opacity var(--transition);
-        border-radius: var(--radius-md);
       }
-      .ine-preview:hover .ine-preview-overlay {
+      .ine-preview-wrap:hover .ine-preview-overlay {
         opacity: 1;
       }
       .ine-preview-overlay span {
@@ -480,28 +533,28 @@
         font-weight: 500;
       }
 
-      /* ── Procesar btn area ────────────────────────────── */
       .ocr-bar {
         display: flex;
         align-items: center;
         gap: var(--space-3);
-        margin-bottom: var(--space-5);
+        margin-bottom: var(--space-4);
+        flex-wrap: wrap;
       }
-      .ocr-status {
+      .ocr-tip {
         font-size: var(--text-xs);
-        color: var(--text-muted);
-        display: flex;
+        color: var(--primary);
+        background: var(--primary-tint);
+        border: 1px solid rgba(1, 105, 111, 0.15);
+        padding: var(--space-2) var(--space-3);
+        border-radius: var(--radius-md);
+        display: none;
         align-items: center;
         gap: var(--space-2);
       }
-      .ocr-status.ok {
-        color: var(--success);
-      }
-      .ocr-status.err {
-        color: var(--error);
+      .ocr-tip.visible {
+        display: flex;
       }
 
-      /* ── Buttons ────────────────────────────── */
       .btn {
         display: inline-flex;
         align-items: center;
@@ -512,7 +565,6 @@
         font-weight: 500;
         transition:
           background var(--transition),
-          color var(--transition),
           opacity var(--transition);
         white-space: nowrap;
       }
@@ -539,20 +591,11 @@
       .btn-secondary:hover {
         background: var(--surface-2);
       }
-      .btn-danger {
-        background: var(--error);
-        color: white;
-        border: 1px solid transparent;
-      }
-      .btn-danger:hover {
-        opacity: 0.9;
-      }
       .btn-lg {
         padding: var(--space-3) var(--space-6);
         font-size: var(--text-base);
       }
 
-      /* ── Tabla resultado ────────────────────────────── */
       .tabla-result {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -619,23 +662,58 @@
         border-color: var(--primary);
       }
 
-      /* ── Loading spinner ────────────────────────────── */
+      .monto-input-wrap {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: var(--surface-2);
+        transition:
+          border-color var(--transition),
+          box-shadow var(--transition);
+      }
+      .monto-input-wrap:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(1, 105, 111, 0.12);
+      }
+      .monto-prefix {
+        padding: var(--space-2) var(--space-3);
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: var(--text-sm);
+        white-space: nowrap;
+      }
+      .monto-input-wrap input {
+        flex: 1;
+        padding: var(--space-2) var(--space-3);
+        border: none;
+        background: transparent;
+        font-size: var(--text-base);
+        font-weight: 600;
+      }
+      .monto-input-wrap input:focus {
+        outline: none;
+      }
+
       @keyframes spin {
         to {
           transform: rotate(360deg);
         }
       }
       .spinner {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
         border: 2px solid currentColor;
         border-top-color: transparent;
         border-radius: 50%;
         animation: spin 0.7s linear infinite;
         display: inline-block;
+        flex-shrink: 0;
       }
 
-      /* ── Toast ────────────────────────────── */
       .toast-container {
         position: fixed;
         top: var(--space-6);
@@ -678,7 +756,6 @@
         border-left: 3px solid var(--primary);
       }
 
-      /* ── Footer bar ────────────────────────────── */
       .footer-bar {
         position: sticky;
         bottom: 0;
@@ -696,75 +773,11 @@
         font-size: var(--text-xs);
         color: var(--text-muted);
       }
-      .footer-validation.has-errors {
-        color: var(--error);
-      }
       .footer-actions {
         display: flex;
         gap: var(--space-3);
       }
 
-      /* ── Required highlight on submit ────────────────────────────── */
-      .validate-highlight .field.required-field:not(.filled) input,
-      .validate-highlight .field.required-field:not(.filled) select {
-        border-color: var(--error);
-        background: var(--error-tint);
-      }
-      .validate-highlight .field.required-field:not(.filled) label {
-        color: var(--error);
-      }
-
-      /* ── Monto input large ────────────────────────────── */
-      .monto-input-wrap {
-        display: flex;
-        align-items: center;
-        gap: 0;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        overflow: hidden;
-        background: var(--surface-2);
-        transition:
-          border-color var(--transition),
-          box-shadow var(--transition);
-      }
-      .monto-input-wrap:focus-within {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.15);
-      }
-      .monto-prefix {
-        padding: var(--space-2) var(--space-3);
-        background: var(--surface);
-        border-right: 1px solid var(--border);
-        font-weight: 600;
-        color: var(--text-muted);
-        font-size: var(--text-sm);
-        white-space: nowrap;
-      }
-      .monto-input-wrap input {
-        flex: 1;
-        padding: var(--space-2) var(--space-3);
-        border: none;
-        background: transparent;
-        font-size: var(--text-base);
-        font-weight: 600;
-        font-variant-numeric: tabular-nums;
-      }
-      .monto-input-wrap input:focus {
-        outline: none;
-      }
-      .monto-input-wrap.error {
-        border-color: var(--error);
-        background: var(--error-tint);
-      }
-
-      /* ── Divider ────────────────────────────── */
-      .divider {
-        border: none;
-        border-top: 1px solid var(--divider);
-        margin: var(--space-4) 0;
-      }
-
-      /* ── Badge status ────────────────────────────── */
       .status-badge {
         display: inline-flex;
         align-items: center;
@@ -782,10 +795,22 @@
         background: var(--warning-tint);
         color: var(--warning);
       }
+
+      .info-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-3);
+        background: var(--primary-tint);
+        border: 1px solid rgba(1, 105, 111, 0.2);
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--text-xs);
+        color: var(--primary);
+        margin-bottom: var(--space-4);
+      }
     </style>
   </head>
   <body>
-    <!-- Header -->
     <header class="header">
       <div class="header-brand">
         <div class="header-logo">
@@ -796,7 +821,6 @@
             fill="none"
             stroke="currentColor"
             stroke-width="2"
-            aria-hidden="true"
           >
             <path
               d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
@@ -804,7 +828,6 @@
             <polyline points="14 2 14 8 20 8" />
             <line x1="16" y1="13" x2="8" y2="13" />
             <line x1="16" y1="17" x2="8" y2="17" />
-            <polyline points="10 9 9 9 8 9" />
           </svg>
         </div>
         <div>
@@ -828,7 +851,6 @@
       </div>
     </header>
 
-    <!-- API config bar -->
     <div class="api-config">
       <svg
         width="14"
@@ -843,14 +865,14 @@
           d="M19.07 4.93a10 10 0 0 1 1.41 14.14M4.93 4.93A10 10 0 0 0 3.52 19.07"
         />
       </svg>
-      <span>URL del servidor:</span>
+      <span>Servidor:</span>
       <input
         type="text"
         id="api-base"
         value="http://localhost:3000"
         placeholder="http://localhost:3000"
       />
-      <span id="api-status" class="ocr-status">— sin probar</span>
+      <span id="api-status" class="scan-status idle">— sin probar</span>
       <button
         class="btn btn-secondary"
         style="padding: 2px 8px; font-size: 11px"
@@ -860,78 +882,90 @@
       </button>
     </div>
 
-    <!-- Tabs -->
     <nav class="tabs-wrapper" role="tablist">
-      <button
-        class="tab-btn active"
-        data-tab="cliente"
-        role="tab"
-        aria-selected="true"
-      >
+      <button class="tab-btn active" data-tab="ine" role="tab">
         <span class="tab-badge" id="badge-1">1</span> Cliente (INE)
       </button>
-      <button class="tab-btn" data-tab="monto" role="tab" aria-selected="false">
-        <span class="tab-badge" id="badge-2">2</span> Monto
+      <button class="tab-btn" data-tab="docs" role="tab">
+        <span class="tab-badge" id="badge-2">2</span> Nómina y Cuenta
       </button>
-      <button
-        class="tab-btn"
-        data-tab="extras"
-        role="tab"
-        aria-selected="false"
-      >
-        <span class="tab-badge" id="badge-3">3</span> Extras
+      <button class="tab-btn" data-tab="extras" role="tab">
+        <span class="tab-badge" id="badge-3">3</span> Extras y Monto
       </button>
     </nav>
 
-    <!-- Main -->
-    <main class="main" id="main-content">
-      <!-- ══ TAB 1: CLIENTE ══ -->
-      <section class="tab-panel active" id="panel-cliente" role="tabpanel">
-        <!-- INE Upload -->
+    <main class="main">
+      <!-- TAB 1 — INE -->
+      <section class="tab-panel active" id="panel-ine">
+        <div class="info-banner">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            style="flex-shrink: 0; margin-top: 1px"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <span
+            ><strong>Tip:</strong> Sube el INE y dale a <em>Leer con OCR</em>.
+            Mientras escanea en segundo plano, puedes ir al Tab 2 a subir las
+            nóminas.</span
+          >
+        </div>
+
         <div class="card">
-          <div class="card-title">Fotografía del INE</div>
-          <div class="ine-upload-area" id="ine-drop-zone">
+          <div class="card-title">
+            Fotografía del INE
+            <span id="ine-scan-status" class="scan-status idle"
+              >Sin escanear</span
+            >
+          </div>
+          <div class="upload-area" id="ine-drop-zone">
             <input
               type="file"
               id="ine-file-input"
               accept="image/*"
               capture="environment"
             />
-            <div id="upload-placeholder">
+            <div id="ine-placeholder">
               <svg
                 class="upload-icon"
-                width="40"
-                height="40"
+                width="36"
+                height="36"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="1.5"
-                aria-hidden="true"
               >
                 <rect x="3" y="4" width="18" height="16" rx="2" />
                 <circle cx="8.5" cy="9.5" r="1.5" />
                 <polyline points="21 15 16 10 5 21" />
               </svg>
               <p class="upload-text">Arrastra la foto del INE aquí</p>
-              <p class="upload-sub">
-                o haz clic para seleccionar · JPG, PNG · max 10MB
-              </p>
+              <p class="upload-sub">o haz clic · JPG, PNG · max 10 MB</p>
             </div>
-            <div class="ine-preview" id="ine-preview">
-              <img
-                id="ine-img"
-                src=""
-                alt="Vista previa del INE"
-                width="640"
-                height="200"
-                loading="lazy"
-              />
-              <div class="ine-preview-overlay">
-                <span>Clic para cambiar imagen</span>
+            <div id="ine-preview" style="display: none">
+              <div class="ine-preview-wrap">
+                <img
+                  id="ine-img"
+                  src=""
+                  alt="INE"
+                  width="640"
+                  height="180"
+                  loading="lazy"
+                />
+                <div class="ine-preview-overlay">
+                  <span>Clic para cambiar</span>
+                </div>
               </div>
             </div>
           </div>
-          <div class="ocr-bar">
+          <div class="ocr-bar" style="margin-top: var(--space-3)">
             <button
               class="btn btn-primary"
               id="btn-procesar-ine"
@@ -951,40 +985,49 @@
               </svg>
               Leer INE con OCR
             </button>
-            <span id="ocr-status" class="ocr-status"
-              >Sube una imagen para continuar</span
-            >
+            <div class="ocr-tip" id="ine-tip">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="13 2 13 9 20 9" />
+                <path
+                  d="M20 14v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"
+                />
+              </svg>
+              Escaneando en segundo plano — puedes avanzar al Tab 2
+            </div>
           </div>
         </div>
 
-        <!-- Datos personales -->
         <div class="card">
           <div class="card-title">Datos Personales</div>
           <div class="form-grid">
-            <div class="field required-field" data-key="ine.nombre1">
+            <div class="field">
               <label>Primer Nombre <span class="req">*</span></label>
               <input type="text" id="ine-nombre1" placeholder="JUAN" />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div class="field" data-key="ine.nombre2">
+            <div class="field">
               <label>Segundo Nombre</label>
               <input type="text" id="ine-nombre2" placeholder="CARLOS" />
             </div>
-            <div class="field required-field" data-key="ine.apellidoPaterno">
+            <div class="field">
               <label>Apellido Paterno <span class="req">*</span></label>
               <input
                 type="text"
                 id="ine-apellidoPaterno"
                 placeholder="GARCÍA"
               />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div class="field required-field" data-key="ine.apellidoMaterno">
+            <div class="field">
               <label>Apellido Materno <span class="req">*</span></label>
               <input type="text" id="ine-apellidoMaterno" placeholder="LÓPEZ" />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div class="field required-field" data-key="ine.curp">
+            <div class="field">
               <label>CURP <span class="req">*</span></label>
               <input
                 type="text"
@@ -993,9 +1036,8 @@
                 maxlength="18"
                 style="text-transform: uppercase"
               />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div class="field" data-key="ine.sexo">
+            <div class="field">
               <label>Sexo</label>
               <select id="ine-sexo">
                 <option value="">— Seleccionar —</option>
@@ -1003,22 +1045,16 @@
                 <option value="M">M - Mujer</option>
               </select>
             </div>
-            <div class="field required-field" data-key="ine.fechaNac">
+            <div class="field">
               <label
                 >Fecha de Nacimiento <span class="req">*</span>
                 <span style="font-weight: 400; color: var(--text-faint)"
-                  >(DD/MM/AAAA)</span
+                  >(AAAA-MM-DD)</span
                 ></label
               >
-              <input
-                type="text"
-                id="ine-fechaNac"
-                placeholder="01/01/1990"
-                maxlength="10"
-              />
-              <span class="err-msg">Formato: DD/MM/AAAA</span>
+              <input type="date" id="ine-fechaNac" placeholder="1990-01-01" />
             </div>
-            <div class="field" data-key="ine.claveElector">
+            <div class="field">
               <label>Clave de Elector</label>
               <input
                 type="text"
@@ -1031,39 +1067,26 @@
           </div>
         </div>
 
-        <!-- Domicilio -->
         <div class="card">
           <div class="card-title">Domicilio</div>
           <div class="form-grid">
-            <div
-              class="field required-field col-span-2"
-              data-key="ine.domicilio.calle"
-            >
+            <div class="field col-span-2">
               <label>Calle <span class="req">*</span></label>
               <input
                 type="text"
                 id="ine-calle"
                 placeholder="AV. INSURGENTES SUR"
               />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div
-              class="field required-field"
-              data-key="ine.domicilio.numeroCasa"
-            >
+            <div class="field">
               <label>No. Ext <span class="req">*</span></label>
               <input type="text" id="ine-numeroCasa" placeholder="1234" />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div class="field required-field" data-key="ine.domicilio.colonia">
+            <div class="field">
               <label>Colonia <span class="req">*</span></label>
               <input type="text" id="ine-colonia" placeholder="CENTRO" />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div
-              class="field required-field"
-              data-key="ine.domicilio.codigoPostal"
-            >
+            <div class="field">
               <label>Código Postal <span class="req">*</span></label>
               <input
                 type="text"
@@ -1071,49 +1094,42 @@
                 placeholder="81000"
                 maxlength="5"
               />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div
-              class="field required-field"
-              data-key="ine.domicilio.municipio"
-            >
+            <div class="field">
               <label>Municipio <span class="req">*</span></label>
               <input type="text" id="ine-municipio" placeholder="GUASAVE" />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div class="field required-field" data-key="ine.domicilio.estado">
+            <div class="field">
               <label>Estado <span class="req">*</span></label>
               <input type="text" id="ine-estado" placeholder="SINALOA" />
-              <span class="err-msg">Campo requerido</span>
             </div>
           </div>
         </div>
 
-        <!-- Datos INE adicionales -->
         <div class="card">
           <div class="card-title">Datos INE Adicionales</div>
           <div class="form-grid cols-3">
-            <div class="field" data-key="ine.seccion">
-              <label>Sección</label>
-              <input
+            <div class="field">
+              <label>Sección</label
+              ><input
                 type="text"
                 id="ine-seccion"
                 placeholder="1234"
                 maxlength="4"
               />
             </div>
-            <div class="field" data-key="ine.vigencia">
-              <label>Vigencia</label>
-              <input
+            <div class="field">
+              <label>Vigencia</label
+              ><input
                 type="text"
                 id="ine-vigencia"
                 placeholder="2031"
                 maxlength="4"
               />
             </div>
-            <div class="field" data-key="ine.numEmision">
-              <label>Núm. de Emisión</label>
-              <input
+            <div class="field">
+              <label>Núm. de Emisión</label
+              ><input
                 type="text"
                 id="ine-numEmision"
                 placeholder="01"
@@ -1124,35 +1140,340 @@
         </div>
       </section>
 
-      <!-- ══ TAB 2: MONTO ══ -->
-      <section class="tab-panel" id="panel-monto" role="tabpanel">
+      <!-- TAB 2 — NÓMINAS + ESTADO DE CUENTA -->
+      <section class="tab-panel" id="panel-docs">
+        <div class="info-banner">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            style="flex-shrink: 0; margin-top: 1px"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <span
+            >Sube los 3 documentos y presiona <strong>Escanear</strong>. Los
+            campos se rellenan solos — edítalos si es necesario.</span
+          >
+        </div>
+
+        <div class="card">
+          <div class="card-title">Documentos</div>
+          <div class="upload-grid-3">
+            <div class="upload-card">
+              <div class="upload-card-label">Nómina 1</div>
+              <div class="upload-area" id="drop-nom1">
+                <input type="file" id="nom1-input" accept="image/*" />
+                <div id="nom1-placeholder">
+                  <svg
+                    class="upload-icon"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
+                    <path
+                      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                    />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  <p class="upload-text">Nómina 1</p>
+                </div>
+                <p
+                  class="upload-filename"
+                  id="nom1-name"
+                  style="display: none"
+                ></p>
+              </div>
+            </div>
+            <div class="upload-card">
+              <div class="upload-card-label">Nómina 2</div>
+              <div class="upload-area" id="drop-nom2">
+                <input type="file" id="nom2-input" accept="image/*" />
+                <div id="nom2-placeholder">
+                  <svg
+                    class="upload-icon"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
+                    <path
+                      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                    />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  <p class="upload-text">Nómina 2</p>
+                </div>
+                <p
+                  class="upload-filename"
+                  id="nom2-name"
+                  style="display: none"
+                ></p>
+              </div>
+            </div>
+            <div class="upload-card">
+              <div class="upload-card-label">Estado de Cuenta</div>
+              <div class="upload-area" id="drop-cuenta">
+                <input type="file" id="cuenta-input" accept="image/*" />
+                <div id="cuenta-placeholder">
+                  <svg
+                    class="upload-icon"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
+                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                    <line x1="2" y1="10" x2="22" y2="10" />
+                  </svg>
+                  <p class="upload-text">Estado de Cuenta</p>
+                </div>
+                <p
+                  class="upload-filename"
+                  id="cuenta-name"
+                  style="display: none"
+                ></p>
+              </div>
+            </div>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: var(--space-3);
+              flex-wrap: wrap;
+            "
+          >
+            <button
+              class="btn btn-primary"
+              id="btn-escanear-docs"
+              onclick="escanearDocumentos()"
+              disabled
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="5 12 12 5 19 12" />
+                <polyline points="5 19 12 12 19 19" />
+              </svg>
+              Escanear Documentos
+            </button>
+            <span id="docs-status" class="scan-status idle"
+              >Sube los 3 documentos</span
+            >
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            Datos Laborales
+            <span id="nomina-badge" class="status-badge pending"
+              >Pendiente</span
+            >
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label
+                >RFC
+                <span
+                  id="rfc-autobadge"
+                  class="autofill-badge"
+                  style="display: none"
+                  >Auto ✓</span
+                ></label
+              >
+              <input
+                type="text"
+                id="doc-rfc"
+                placeholder="GAGO9701033W6"
+                style="text-transform: uppercase"
+              />
+            </div>
+            <div class="field">
+              <label
+                >No. Empleado
+                <span
+                  id="empleado-autobadge"
+                  class="autofill-badge"
+                  style="display: none"
+                  >Auto ✓</span
+                ></label
+              >
+              <input type="text" id="doc-empleado" placeholder="43724" />
+            </div>
+            <div class="field col-span-2">
+              <label
+                >Dependencia
+                <span
+                  id="dependencia-autobadge"
+                  class="autofill-badge"
+                  style="display: none"
+                  >Auto ✓</span
+                ></label
+              >
+              <input
+                type="text"
+                id="doc-dependencia"
+                placeholder="GOBIERNO DEL ESTADO DE SINALOA"
+              />
+            </div>
+            <div class="field col-span-2">
+              <label
+                >Departamento
+                <span
+                  id="departamento-autobadge"
+                  class="autofill-badge"
+                  style="display: none"
+                  >Auto ✓</span
+                ></label
+              >
+              <input
+                type="text"
+                id="doc-departamento"
+                placeholder="INSTITUTO DE PENSIONES DEL ESTADO"
+              />
+            </div>
+            <div class="field">
+              <label
+                >Puesto
+                <span
+                  id="puesto-autobadge"
+                  class="autofill-badge"
+                  style="display: none"
+                  >Auto ✓</span
+                ></label
+              >
+              <input type="text" id="doc-puesto" placeholder="ASISTENTE" />
+            </div>
+            <div class="field">
+              <label
+                >Ingreso Mensual
+                <span
+                  id="ingreso-autobadge"
+                  class="autofill-badge"
+                  style="display: none"
+                  >Auto ✓</span
+                ></label
+              >
+              <input
+                type="number"
+                id="doc-ingresoMensual"
+                placeholder="10882.48"
+                step="0.01"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            Datos Bancarios
+            <span id="cuenta-badge" class="status-badge pending"
+              >Pendiente</span
+            >
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label
+                >No. de Cuenta
+                <span
+                  id="numcuenta-autobadge"
+                  class="autofill-badge"
+                  style="display: none"
+                  >Auto ✓</span
+                ></label
+              >
+              <input
+                type="text"
+                id="doc-numeroCuenta"
+                placeholder="012345678901"
+              />
+            </div>
+            <div class="field">
+              <label
+                >Banco
+                <span
+                  id="banco-autobadge"
+                  class="autofill-badge"
+                  style="display: none"
+                  >Auto ✓</span
+                ></label
+              >
+              <select id="doc-banco">
+                <option value="">— Seleccionar —</option>
+                <option>BBVA</option>
+                <option>SANTANDER</option>
+                <option>BANAMEX</option>
+                <option>BANORTE</option>
+                <option>HSBC</option>
+                <option>SCOTIABANK</option>
+                <option>INBURSA</option>
+                <option>AZTECA</option>
+                <option>BIENESTAR</option>
+                <option>OTRO</option>
+              </select>
+            </div>
+            <div class="field col-span-2">
+              <label
+                >CLABE Interbancaria
+                <span
+                  id="clabe-autobadge"
+                  class="autofill-badge"
+                  style="display: none"
+                  >Auto ✓</span
+                ></label
+              >
+              <input
+                type="text"
+                id="doc-clabe"
+                placeholder="021180012345678901"
+                maxlength="18"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3 — EXTRAS + MONTO -->
+      <section class="tab-panel" id="panel-extras">
         <div class="card">
           <div class="card-title">Solicitud de Crédito</div>
-
-          <div class="form-grid" style="align-items: end">
-            <div
-              class="field required-field col-span-2"
-              data-key="tabla.montoNeto"
-            >
+          <div class="form-grid">
+            <div class="field col-span-2">
               <label>Monto Neto (Capital) <span class="req">*</span></label>
               <div class="monto-input-wrap" id="monto-wrap">
                 <span class="monto-prefix">MXN $</span>
                 <input
                   type="number"
                   id="tabla-montoNeto"
-                  placeholder="10,000"
+                  placeholder="25000"
                   min="1000"
                   max="200000"
                   step="500"
                 />
               </div>
-              <span class="err-msg">Ingresa el monto del crédito</span>
             </div>
           </div>
-
           <div class="field" style="margin-top: var(--space-4)">
             <label>Plazo (Quincenas) <span class="req">*</span></label>
-            <div class="tabla-plazo-selector" id="plazo-chips">
+            <div class="tabla-plazo-selector">
               <button
                 class="plazo-chip"
                 data-qnas="24"
@@ -1198,11 +1519,10 @@
             </div>
             <input type="hidden" id="tabla-plazoQuincenas" value="48" />
           </div>
-
-          <div style="margin-top: var(--space-5)">
+          <div style="margin-top: var(--space-4)">
             <button
               class="btn btn-primary btn-lg"
-              id="btn-consultar"
+              id="btn-calcular"
               onclick="consultarTabla()"
             >
               <svg
@@ -1218,319 +1538,215 @@
               Calcular tabla
             </button>
           </div>
-
-          <!-- Resultado tabla -->
-          <hr class="divider" />
-          <div id="tabla-result-area">
-            <div class="tabla-result">
-              <div class="tabla-placeholder" id="tabla-placeholder">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  style="
-                    margin: 0 auto var(--space-2);
-                    color: var(--text-faint);
-                  "
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <path d="M3 9h18M9 21V9" />
-                </svg>
-                Ingresa el monto y plazo, luego presiona "Calcular tabla"
-              </div>
-            </div>
-            <div class="tabla-result" id="tabla-stats" style="display: none">
-              <div class="tabla-stat">
-                <div class="tabla-stat-label">Monto Pagaré</div>
-                <div class="tabla-stat-value highlight" id="stat-montoPagare">
-                  —
-                </div>
-              </div>
-              <div class="tabla-stat">
-                <div class="tabla-stat-label">Descuento Quincenal</div>
-                <div
-                  class="tabla-stat-value highlight"
-                  id="stat-descuentoQuincenal"
-                >
-                  —
-                </div>
-              </div>
-              <div class="tabla-stat">
-                <div class="tabla-stat-label">CAT Anual</div>
-                <div class="tabla-stat-value" id="stat-cat">—</div>
-              </div>
-              <div class="tabla-stat">
-                <div class="tabla-stat-label">Tasa Mensual</div>
-                <div class="tabla-stat-value" id="stat-tasaMensual">—</div>
-              </div>
-              <div class="tabla-stat">
-                <div class="tabla-stat-label">Tasa Anual</div>
-                <div class="tabla-stat-value" id="stat-tasaAnual">—</div>
-              </div>
-              <div class="tabla-stat">
-                <div class="tabla-stat-label">Intereses Totales</div>
-                <div class="tabla-stat-value" id="stat-importeInteres">—</div>
-              </div>
+          <div class="tabla-result" id="tabla-result">
+            <div class="tabla-placeholder">
+              Ingresa el monto y presiona "Calcular tabla"
             </div>
           </div>
         </div>
 
-        <!-- Monto en letras (readonly, se calcula automático) -->
-        <div class="card" id="card-monto-letras" style="display: none">
-          <div class="card-title">Monto en Letras (auto-generado)</div>
-          <div class="form-grid cols-1">
-            <div class="field">
-              <label>Importe Total con Letra</label>
-              <input type="text" id="monto-letras-val" readonly />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══ TAB 3: EXTRAS ══ -->
-      <section class="tab-panel" id="panel-extras" role="tabpanel">
-        <!-- Datos del contrato -->
         <div class="card">
-          <div class="card-title">Datos del Contrato</div>
+          <div class="card-title">Datos del Asesor</div>
           <div class="form-grid cols-3">
-            <div class="field required-field" data-key="extra.folio">
-              <label>Folio <span class="req">*</span></label>
-              <input type="text" id="extra-folio" placeholder="C-2026-001" />
-              <span class="err-msg">Campo requerido</span>
+            <div class="field">
+              <label>Folio</label
+              ><input type="text" id="extra-folio" placeholder="00001" />
             </div>
-            <div class="field" data-key="extra.vendedor">
-              <label>Vendedor / Asesor</label>
-              <input
+            <div class="field">
+              <label>Sucursal</label>
+              <input type="text" id="extra-sucursal" placeholder="DATAZO" />
+            </div>
+            <div class="field">
+              <label>Núm. Vendedor</label>
+              <input type="text" id="extra-numVendedor" placeholder="000" />
+            </div>
+            <div class="field col-span-2">
+              <label>Vendedor / Asesor</label
+              ><input
                 type="text"
                 id="extra-vendedor"
-                placeholder="NOMBRE ASESOR"
+                placeholder="NOMBRE DEL ASESOR"
               />
             </div>
-            <div class="field" data-key="extra.estadoCivil">
-              <label>Estado Civil</label>
-              <select id="extra-estadoCivil">
-                <option value="">— Seleccionar —</option>
-                <option value="SOLTERO">Soltero(a)</option>
-                <option value="CASADO">Casado(a)</option>
-                <option value="DIVORCIADO">Divorciado(a)</option>
-                <option value="VIUDO">Viudo(a)</option>
-                <option value="UNION LIBRE">Unión Libre</option>
-              </select>
-            </div>
-            <div class="field" data-key="extra.lugarFecha">
-              <label>Lugar y Fecha</label>
+            <div class="field">
+              <label
+                >Fecha Contrato
+                <span style="font-weight: 400; color: var(--text-faint)"
+                  >(AAAA-MM-DD)</span
+                ></label
+              >
               <input
+                type="date"
+                id="extra-fechaContrato"
+                placeholder="2026-04-25"
+              />
+            </div>
+            <div class="field">
+              <label
+                >Fecha Arranque
+                <span style="font-weight: 400; color: var(--text-faint)"
+                  >(AAAA-MM-DD)</span
+                ></label
+              >
+              <input
+                type="date"
+                id="extra-fechaArranque"
+                placeholder="2026-05-10"
+              />
+            </div>
+            <div class="field">
+              <label>Lugar</label
+              ><input
                 type="text"
                 id="extra-lugarFecha"
-                placeholder="GUASAVE, SIN."
+                placeholder="GUASAVE, SINALOA"
               />
             </div>
-            <div class="field" data-key="extra.fechaContrato">
-              <label>Fecha del Contrato</label>
-              <input type="date" id="extra-fechaContrato" />
+            <div class="field">
+              <label>Mes Descuento</label
+              ><input type="text" id="extra-mesDescuento" placeholder="MAYO" />
             </div>
-            <div class="field" data-key="extra.fechaArranque">
-              <label>Fecha de Arranque</label>
-              <input type="date" id="extra-fechaArranque" />
+            <div class="field">
+              <label>Año Descuento</label
+              ><input
+                type="text"
+                id="extra-anioDescuento"
+                placeholder="2026"
+                maxlength="4"
+              />
             </div>
           </div>
         </div>
 
-        <!-- Datos de contacto -->
         <div class="card">
-          <div class="card-title">Datos de Contacto</div>
-          <div class="form-grid">
-            <div class="field required-field" data-key="extra.telefonoCelular">
-              <label>Teléfono Celular <span class="req">*</span></label>
-              <input
+          <div class="card-title">Contacto y Estado Civil</div>
+          <div class="form-grid cols-3">
+            <div class="field">
+              <label>Tel. Celular</label
+              ><input
                 type="tel"
                 id="extra-telefonoCelular"
-                placeholder="6871234567"
+                placeholder="6671234567"
                 maxlength="10"
               />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div class="field" data-key="extra.telefonoCasa">
-              <label>Teléfono Casa</label>
-              <input
+            <div class="field">
+              <label>Tel. Casa</label
+              ><input
                 type="tel"
                 id="extra-telefonoCasa"
-                placeholder="6870000000"
+                placeholder="6671234567"
                 maxlength="10"
               />
             </div>
-            <div class="field col-span-2" data-key="extra.mail">
-              <label>Correo Electrónico</label>
-              <input
+            <div class="field">
+              <label>Correo</label
+              ><input
                 type="email"
                 id="extra-mail"
                 placeholder="correo@ejemplo.com"
               />
             </div>
-            <div class="field" data-key="extra.rfc">
-              <label>RFC</label>
-              <input
-                type="text"
-                id="extra-rfc"
-                placeholder="XAXX010101000"
-                maxlength="13"
-                style="text-transform: uppercase"
-              />
-            </div>
-            <div class="field" data-key="extra.ingresoMensual">
-              <label>Ingreso Mensual</label>
-              <input
-                type="number"
-                id="extra-ingresoMensual"
-                placeholder="15000"
-                min="0"
-              />
+            <div class="field">
+              <label>Estado Civil</label>
+              <select id="extra-estadoCivil">
+                <option value="SOLTERO">SOLTERO</option>
+                <option value="CASADO">CASADO</option>
+                <option value="DIVORCIADO">DIVORCIADO</option>
+                <option value="VIUDO">VIUDO</option>
+                <option value="UNION LIBRE">UNIÓN LIBRE</option>
+              </select>
             </div>
           </div>
         </div>
 
-        <!-- Datos laborales -->
         <div class="card">
-          <div class="card-title">Datos Laborales</div>
+          <div class="card-title">Antigüedad</div>
           <div class="form-grid">
-            <div class="field required-field" data-key="extra.dependencia">
-              <label>Dependencia <span class="req">*</span></label>
-              <select id="extra-dependencia">
-                <option value="">Seleccionar</option>
-                <option value="GOBIERNO DEL ESTADO DE SINALOA">
-                  Gobierno del Estado de Sinaloa
-                </option>
-                <option value="MAGISTERIO DE SINALOA">
-                  Magisterio de Sinaloa
-                </option>
-              </select>
-              <span class="err-msg">Campo requerido</span>
-            </div>
-            <div class="field required-field" data-key="extra.empleado">
-              <label>No. Empleado <span class="req">*</span></label>
-              <input type="text" id="extra-empleado" placeholder="12345" />
-              <span class="err-msg">Campo requerido</span>
-            </div>
-            <div class="field" data-key="extra.departamento">
-              <label>Departamento</label>
+            <div class="field">
+              <label>Fecha de ingreso</label>
               <input
-                type="text"
-                id="extra-departamento"
-                placeholder="EDUCACIÓN"
+                type="date"
+                id="extra-fechaIngreso"
+                placeholder="2020-01-01"
+                onchange="calcularAntiguedadDesdeFecha()"
               />
             </div>
-            <div class="field" data-key="extra.puesto">
-              <label>Puesto</label>
-              <input type="text" id="extra-puesto" placeholder="DOCENTE" />
-            </div>
-            <div class="field" data-key="extra.añosAntiguedad">
-              <label>Años de Antigüedad</label>
-              <input
-                type="number"
-                id="extra-añosAntiguedad"
-                placeholder="5"
-                min="0"
-              />
-            </div>
-            <div class="field" data-key="extra.mesesAntiguedad">
-              <label>Meses de Antigüedad</label>
+            <div class="field">
+              <label>Meses</label>
               <input
                 type="number"
                 id="extra-mesesAntiguedad"
-                placeholder="6"
+                placeholder="0"
                 min="0"
-                max="11"
+                readonly
+              />
+            </div>
+            <div class="field">
+              <label>Años</label>
+              <input
+                type="number"
+                id="extra-anosAntiguedad"
+                placeholder="0"
+                min="0"
+                readonly
               />
             </div>
           </div>
         </div>
 
-        <!-- Referencias -->
         <div class="card">
           <div class="card-title">Referencias Personales</div>
-          <div class="form-grid">
-            <div class="field required-field" data-key="extra.referencia1">
-              <label>Referencia 1 <span class="req">*</span></label>
-              <input
+          <div class="form-grid cols-3">
+            <div class="field col-span-2">
+              <label>Referencia 1</label
+              ><input
                 type="text"
                 id="extra-referencia1"
-                placeholder="NOMBRE COMPLETO"
+                placeholder="Nombre completo"
               />
-              <span class="err-msg">Campo requerido</span>
             </div>
-            <div class="field" data-key="extra.telefonoReferencia1">
-              <label>Teléfono Ref. 1</label>
-              <input
+            <div class="field">
+              <label>Teléfono</label
+              ><input
                 type="tel"
-                id="extra-telefonoReferencia1"
-                placeholder="6871234567"
+                id="extra-telRef1"
+                placeholder="6671234567"
                 maxlength="10"
               />
             </div>
-            <div class="field" data-key="extra.referencia2">
-              <label>Referencia 2</label>
-              <input
+            <div class="field col-span-2">
+              <label>Referencia 2</label
+              ><input
                 type="text"
                 id="extra-referencia2"
-                placeholder="NOMBRE COMPLETO"
+                placeholder="Nombre completo"
               />
             </div>
-            <div class="field" data-key="extra.telefonoReferencia2">
-              <label>Teléfono Ref. 2</label>
-              <input
+            <div class="field">
+              <label>Teléfono</label
+              ><input
                 type="tel"
-                id="extra-telefonoReferencia2"
-                placeholder="6871234567"
+                id="extra-telRef2"
+                placeholder="6671234567"
                 maxlength="10"
               />
             </div>
-            <div class="field" data-key="extra.referencia3">
-              <label>Referencia 3</label>
-              <input
+            <div class="field col-span-2">
+              <label>Referencia 3</label
+              ><input
                 type="text"
                 id="extra-referencia3"
-                placeholder="NOMBRE COMPLETO"
+                placeholder="Nombre completo"
               />
             </div>
-            <div class="field" data-key="extra.telefonoReferencia3">
-              <label>Teléfono Ref. 3</label>
-              <input
+            <div class="field">
+              <label>Teléfono</label
+              ><input
                 type="tel"
-                id="extra-telefonoReferencia3"
-                placeholder="6871234567"
+                id="extra-telRef3"
+                placeholder="6671234567"
                 maxlength="10"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Datos bancarios -->
-        <div class="card">
-          <div class="card-title">Datos Bancarios (Opcional)</div>
-          <div class="form-grid cols-3">
-            <div class="field" data-key="extra.banco">
-              <label>Banco</label>
-              <input type="text" id="extra-banco" placeholder="BANAMEX" />
-            </div>
-            <div class="field" data-key="extra.numeroCuenta">
-              <label>Número de Cuenta</label>
-              <input
-                type="text"
-                id="extra-numeroCuenta"
-                placeholder="1234567890"
-                maxlength="16"
-              />
-            </div>
-            <div class="field" data-key="extra.clabe">
-              <label>CLABE Interbancaria</label>
-              <input
-                type="text"
-                id="extra-clabe"
-                placeholder="002320701234567890"
-                maxlength="18"
               />
             </div>
           </div>
@@ -1538,10 +1754,9 @@
       </section>
     </main>
 
-    <!-- Footer bar -->
     <footer class="footer-bar">
       <span class="footer-validation" id="footer-status"
-        >Completa todos los campos requeridos para continuar.</span
+        >Completa todos los campos requeridos.</span
       >
       <div class="footer-actions">
         <button class="btn btn-secondary" onclick="limpiarTodo()">
@@ -1583,29 +1798,29 @@
       </div>
     </footer>
 
-    <!-- Toast container -->
     <div class="toast-container" id="toasts" aria-live="polite"></div>
 
     <script>
-      /* ── State ──────────────────────────────────── */
+      // ─── Estado global ────────────────────────────────────────────
       const state = {
-        ineImageFile: null,
+        ineFile: null,
+        nomina1File: null,
+        nomina2File: null,
+        estadoCuentaFile: null,
         tablaData: null,
         plazoSeleccionado: 48,
       };
 
-      /* ── Helpers ──────────────────────────────────────── */
-      function apiBase() {
+      // ─── Helpers ─────────────────────────────────────────────────
+      function api() {
         return document.getElementById("api-base").value.replace(/\/$/, "");
       }
-
       function fmt(n) {
         return new Intl.NumberFormat("es-MX", {
           style: "currency",
           currency: "MXN",
         }).format(n);
       }
-
       function pct(n) {
         return Number(n).toFixed(2) + "%";
       }
@@ -1617,9 +1832,7 @@
         const icons = { success: "✓", error: "✗", info: "ℹ" };
         t.innerHTML = `<span style="font-weight:600">${icons[type] || "ℹ"}</span> ${msg}`;
         c.appendChild(t);
-        requestAnimationFrame(() => {
-          t.classList.add("show");
-        });
+        requestAnimationFrame(() => t.classList.add("show"));
         setTimeout(() => {
           t.classList.remove("show");
           setTimeout(() => t.remove(), 300);
@@ -1637,213 +1850,249 @@
         }
       }
 
-      /* ── Numero a letras ──────────────────────────── */
-      const UNIDADES = [
-        "",
-        "UNO",
-        "DOS",
-        "TRES",
-        "CUATRO",
-        "CINCO",
-        "SEIS",
-        "SIETE",
-        "OCHO",
-        "NUEVE",
-        "DIEZ",
-        "ONCE",
-        "DOCE",
-        "TRECE",
-        "CATORCE",
-        "QUINCE",
-        "DIECISÉIS",
-        "DIECISIETE",
-        "DIECIOCHO",
-        "DIECINUEVE",
-      ];
-      const DECENAS = [
-        "",
-        "DIEZ",
-        "VEINTE",
-        "TREINTA",
-        "CUARENTA",
-        "CINCUENTA",
-        "SESENTA",
-        "SETENTA",
-        "OCHENTA",
-        "NOVENTA",
-      ];
-      const CENTENAS = [
-        "",
-        "CIENTO",
-        "DOSCIENTOS",
-        "TRESCIENTOS",
-        "CUATROCIENTOS",
-        "QUINIENTOS",
-        "SEISCIENTOS",
-        "SETECIENTOS",
-        "OCHOCIENTOS",
-        "NOVECIENTOS",
-      ];
-
-      function cens(n) {
-        if (n === 100) return "CIEN";
-        if (n < 20) return UNIDADES[n];
-        if (n < 100) {
-          const u = n % 10;
-          return u === 0
-            ? DECENAS[Math.floor(n / 10)]
-            : `${DECENAS[Math.floor(n / 10)]} Y ${UNIDADES[u]}`;
-        }
-        const r = n % 100;
-        return r === 0
-          ? CENTENAS[Math.floor(n / 100)]
-          : `${CENTENAS[Math.floor(n / 100)]} ${cens(r)}`;
-      }
-      function miles(n) {
-        if (!n) return "";
-        if (n < 1000) return cens(n);
-        const m = Math.floor(n / 1000),
-          r = n % 1000;
-        const p = m === 1 ? "MIL" : `${cens(m)} MIL`;
-        return r === 0 ? p : `${p} ${cens(r)}`;
-      }
-      function numeroALetras(num) {
-        const [ei, di] = Number(num).toFixed(2).split(".");
-        const e = parseInt(ei);
-        const millones = Math.floor(e / 1e6),
-          resto = e % 1e6;
-        let res = "";
-        if (millones === 1) res = "UN MILLÓN ";
-        else if (millones > 1) res = `${cens(millones)} MILLONES `;
-        res += miles(resto);
-        return `${res.trim()} PESOS ${di.padEnd(2, "0")}/100 M.N.`;
+      function setScanStatus(id, status, text) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.className = `scan-status ${status}`;
+        el.textContent = text;
       }
 
-      /* ── Dark mode toggle ──────────────────────────── */
-      (function () {
-        const t = document.querySelector("[data-theme-toggle]"),
-          r = document.documentElement;
-        let d = matchMedia("(prefers-color-scheme:dark)").matches
-          ? "dark"
-          : "light";
-        r.setAttribute("data-theme", d);
-        t &&
-          t.addEventListener("click", () => {
-            d = d === "dark" ? "light" : "dark";
-            r.setAttribute("data-theme", d);
-          });
-      })();
+      function markAutofill(inputId, badgeId) {
+        const inp = document.getElementById(inputId);
+        const badge = document.getElementById(badgeId);
+        if (inp) inp.classList.add("autofilled");
+        if (badge) badge.style.display = "inline-flex";
+      }
 
-      /* ── Tabs ──────────────────────────────────── */
+      function v(id) {
+        return document.getElementById(id)?.value?.trim() || "";
+      }
+
+      // ─── Tabs ─────────────────────────────────────────────────────
       document.querySelectorAll(".tab-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
-          document.querySelectorAll(".tab-btn").forEach((b) => {
-            b.classList.remove("active");
-            b.setAttribute("aria-selected", "false");
-          });
+          document
+            .querySelectorAll(".tab-btn")
+            .forEach((b) => b.classList.remove("active"));
           document
             .querySelectorAll(".tab-panel")
             .forEach((p) => p.classList.remove("active"));
           btn.classList.add("active");
-          btn.setAttribute("aria-selected", "true");
           document
             .getElementById("panel-" + btn.dataset.tab)
             .classList.add("active");
         });
       });
 
-      /* ── INE Upload ──────────────────────────────────── */
-      const dropZone = document.getElementById("ine-drop-zone");
-      const fileInput = document.getElementById("ine-file-input");
-
-      dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("dragging");
-      });
-      dropZone.addEventListener("dragleave", () =>
-        dropZone.classList.remove("dragging"),
-      );
-      dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropZone.classList.remove("dragging");
-        const f = e.dataTransfer.files[0];
-        if (f && f.type.startsWith("image/")) setINEImage(f);
-      });
-      fileInput.addEventListener("change", () => {
-        if (fileInput.files[0]) setINEImage(fileInput.files[0]);
-      });
-
-      function setINEImage(file) {
-        if (file.size > 10 * 1024 * 1024) {
-          toast("La imagen es demasiado grande (máx. 10MB)", "error");
-          return;
-        }
-        state.ineImageFile = file;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = document.getElementById("ine-img");
-          img.src = e.target.result;
-          document.getElementById("upload-placeholder").style.display = "none";
-          document.getElementById("ine-preview").style.display = "block";
-          dropZone.classList.add("has-image");
-          document.getElementById("btn-procesar-ine").disabled = false;
-          document.getElementById("ocr-status").textContent =
-            `Imagen lista: ${file.name}`;
-        };
-        reader.readAsDataURL(file);
+      function goToTab(tab) {
+        document.querySelector(`.tab-btn[data-tab="${tab}"]`).click();
       }
 
-      /* ── OCR / Procesar INE ──────────────────────────── */
-      async function procesarINE() {
-        if (!state.ineImageFile) return;
-        const btn = document.getElementById("btn-procesar-ine");
-        const statusEl = document.getElementById("ocr-status");
-        setLoading(btn, true, "Procesando...");
-        statusEl.className = "ocr-status";
-        statusEl.textContent = "Enviando imagen al servidor...";
+      // ─── Tema ─────────────────────────────────────────────────────
+      document
+        .querySelector("[data-theme-toggle]")
+        .addEventListener("click", () => {
+          document.documentElement.dataset.theme =
+            document.documentElement.dataset.theme === "dark"
+              ? "light"
+              : "dark";
+        });
 
+      // ─── Probar conexión ─────────────────────────────────────────
+      async function testConnection() {
+        setScanStatus("api-status", "scanning", "Probando...");
+        try {
+          const r = await fetch(api() + "/health", {
+            signal: AbortSignal.timeout(3000),
+          });
+          if (r.ok) {
+            setScanStatus("api-status", "done", "✓ Conectado");
+          } else throw new Error();
+        } catch {
+          setScanStatus("api-status", "error-status", "✗ Sin conexión");
+        }
+      }
+
+      // ─── Upload setup genérico ────────────────────────────────────
+      function setupUpload(
+        inputId,
+        dropId,
+        placeholderId,
+        previewId,
+        imgId,
+        nameId,
+        onFile,
+      ) {
+        const input = document.getElementById(inputId);
+        const drop = document.getElementById(dropId);
+
+        input.addEventListener("change", (e) => {
+          const f = e.target.files[0];
+          if (!f) return;
+          if (previewId && imgId) {
+            document.getElementById(placeholderId).style.display = "none";
+            const pv = document.getElementById(previewId);
+            pv.style.display = "block";
+            document.getElementById(imgId).src = URL.createObjectURL(f);
+          } else if (nameId) {
+            document.getElementById(placeholderId).style.display = "none";
+            const nm = document.getElementById(nameId);
+            nm.style.display = "block";
+            nm.textContent = "✓ " + f.name;
+          }
+          drop.classList.add("has-file");
+          onFile(f);
+        });
+
+        ["dragover", "dragleave", "drop"].forEach((ev) => {
+          drop.addEventListener(ev, (e) => {
+            e.preventDefault();
+            if (ev === "dragover") drop.classList.add("dragging");
+            else drop.classList.remove("dragging");
+            if (ev === "drop" && e.dataTransfer.files[0]) {
+              input.files = e.dataTransfer.files;
+              input.dispatchEvent(new Event("change"));
+            }
+          });
+        });
+      }
+
+      setupUpload(
+        "ine-file-input",
+        "ine-drop-zone",
+        "ine-placeholder",
+        "ine-preview",
+        "ine-img",
+        null,
+        (f) => {
+          state.ineFile = f;
+          document.getElementById("btn-procesar-ine").disabled = false;
+        },
+      );
+      setupUpload(
+        "nom1-input",
+        "drop-nom1",
+        "nom1-placeholder",
+        null,
+        null,
+        "nom1-name",
+        (f) => {
+          state.nomina1File = f;
+          checkDocsReady();
+        },
+      );
+      setupUpload(
+        "nom2-input",
+        "drop-nom2",
+        "nom2-placeholder",
+        null,
+        null,
+        "nom2-name",
+        (f) => {
+          state.nomina2File = f;
+          checkDocsReady();
+        },
+      );
+      setupUpload(
+        "cuenta-input",
+        "drop-cuenta",
+        "cuenta-placeholder",
+        null,
+        null,
+        "cuenta-name",
+        (f) => {
+          state.estadoCuentaFile = f;
+          checkDocsReady();
+        },
+      );
+
+      function checkDocsReady() {
+        const ready =
+          state.nomina1File && state.nomina2File && state.estadoCuentaFile;
+        document.getElementById("btn-escanear-docs").disabled = !ready;
+        if (ready) setScanStatus("docs-status", "idle", "Listo para escanear");
+      }
+
+      // ─── TAB 1: Escanear INE ─────────────────────────────────────
+      async function procesarINE() {
+        const btn = document.getElementById("btn-procesar-ine");
+        const tip = document.getElementById("ine-tip");
+        setScanStatus("ine-scan-status", "scanning", "Escaneando...");
+        document
+          .querySelector('.tab-btn[data-tab="ine"]')
+          .classList.add("scanning");
+        setLoading(btn, true, "Escaneando...");
+        tip.classList.add("visible");
+        toast(
+          "Escaneando INE en segundo plano — puedes ir al Tab 2",
+          "info",
+          6000,
+        );
         try {
           const fd = new FormData();
-          fd.append("ine", state.ineImageFile);
-          const res = await fetch(`${apiBase()}/api/ine/escanear-ine`, {
+          fd.append("ine", state.ineFile);
+          const r = await fetch(api() + "/api/ine/escanear-ine", {
             method: "POST",
             body: fd,
           });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = await res.json();
-          llenarCamposINE(data);
-          statusEl.className = "ocr-status ok";
-          statusEl.textContent =
-            "✓ INE procesado correctamente. Verifica los datos.";
-          toast(
-            "Datos del INE cargados. Revisa que estén correctos.",
-            "success",
-          );
+          if (!r.ok) throw new Error(`Error ${r.status}`);
+
+          const datos = await r.json();
+          llenarINE(datos);
+
+          setScanStatus("ine-scan-status", "done", "✓ Escaneado");
+          document
+            .querySelector('.tab-btn[data-tab="ine"]')
+            .classList.remove("scanning");
+          document
+            .querySelector('.tab-btn[data-tab="ine"]')
+            .classList.add("complete");
+          document.getElementById("badge-1").textContent = "✓";
+          toast("INE escaneado correctamente", "success");
         } catch (err) {
-          statusEl.className = "ocr-status err";
-          statusEl.textContent = `✗ Error: ${err.message}. Puedes llenar los campos manualmente.`;
-          toast(`Error al procesar INE: ${err.message}`, "error");
+          setScanStatus("ine-scan-status", "error-status", "✗ Error");
+          document
+            .querySelector('.tab-btn[data-tab="ine"]')
+            .classList.remove("scanning");
+          toast("Error al escanear INE: " + err.message, "error");
         } finally {
           setLoading(btn, false);
+          tip.classList.remove("visible");
         }
       }
+      function convertirFechaAISO(fecha) {
+        if (!fecha) return "";
 
-      function llenarCamposINE(d) {
+        // Si ya viene en AAAA-MM-DD, la dejamos tal cual
+        if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return fecha;
+
+        // Si viene en DD/MM/AAAA → la convertimos a AAAA-MM-DD
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(fecha)) {
+          const [dd, mm, yyyy] = fecha.split("/");
+          return `${yyyy}-${mm}-${dd}`;
+        }
+
+        return fecha; // fallback por si viene en otro formato
+      }
+      function llenarINE(d) {
         const set = (id, val) => {
           const el = document.getElementById(id);
-          if (el && val) el.value = val;
+          if (el && val) {
+            el.value = val;
+            el.classList.add("autofilled");
+          }
         };
         set("ine-nombre1", d.nombre1);
         set("ine-nombre2", d.nombre2);
         set("ine-apellidoPaterno", d.apellidoPaterno);
         set("ine-apellidoMaterno", d.apellidoMaterno);
         set("ine-curp", d.curp);
-        set("ine-sexo", d.sexo);
-        set("ine-fechaNac", d.fechaNac);
+        //set("ine-fechaNac", d.fechaNac);
+        // Convierte DD/MM/AAAA → AAAA-MM-DD para el input type="date"
+        const fechaNacISO = convertirFechaAISO(d.fechaNac);
+        set("ine-fechaNac", fechaNacISO);
         set("ine-claveElector", d.claveElector);
-        set("ine-seccion", d.seccion);
-        set("ine-vigencia", d.vigencia);
-        set("ine-numEmision", d.numEmision);
+        if (d.sexo) document.getElementById("ine-sexo").value = d.sexo;
         if (d.domicilio) {
           set("ine-calle", d.domicilio.calle);
           set("ine-numeroCasa", d.domicilio.numeroCasa);
@@ -1852,348 +2101,423 @@
           set("ine-municipio", d.domicilio.municipio);
           set("ine-estado", d.domicilio.estado);
         }
-        checkRequiredFields();
+        set("ine-seccion", d.seccion);
+        set("ine-vigencia", d.vigencia);
+        set("ine-numEmision", d.numEmision);
       }
 
-      /* ── Plazo selector ──────────────────────────────────── */
-      function selectPlazo(qnas) {
-        state.plazoSeleccionado = qnas;
-        document.getElementById("tabla-plazoQuincenas").value = qnas;
-        document.querySelectorAll(".plazo-chip").forEach((c) => {
-          c.classList.toggle("selected", parseInt(c.dataset.qnas) === qnas);
-        });
-      }
-
-      /* ── Consultar tabla ──────────────────────────────────── */
-      async function consultarTabla() {
-        const montoEl = document.getElementById("tabla-montoNeto");
-        const monto = parseFloat(montoEl.value);
-        if (!monto || monto < 1000) {
-          document.getElementById("monto-wrap").classList.add("error");
-          toast("Ingresa un monto válido (mínimo $1,000)", "error");
-          montoEl.focus();
-          return;
-        }
-        document.getElementById("monto-wrap").classList.remove("error");
-        const btn = document.getElementById("btn-consultar");
-        setLoading(btn, true, "Consultando...");
-
+      // ─── TAB 2: Escanear Documentos (paralelo) ───────────────────
+      async function escanearDocumentos() {
+        const btn = document.getElementById("btn-escanear-docs");
+        setLoading(btn, true, "Escaneando...");
+        setScanStatus("docs-status", "scanning", "Escaneando...");
+        document
+          .querySelector('.tab-btn[data-tab="docs"]')
+          .classList.add("scanning");
         try {
-          const body = { monto, quincenas: state.plazoSeleccionado };
-          const res = await fetch(`${apiBase()}/api/monto/filtrar-tabla`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = await res.json();
-          mostrarTabla(data.tabla || data);
-          toast("Tabla calculada correctamente", "success");
+          const [nominaData, cuentaData] = await Promise.all([
+            escanearNomina(),
+            escanearEstadoCuenta(),
+          ]);
+          if (nominaData) {
+            llenarNomina(nominaData);
+            document.getElementById("nomina-badge").className =
+              "status-badge ok";
+            document.getElementById("nomina-badge").textContent = "✓ Escaneado";
+          }
+          if (cuentaData) {
+            llenarCuenta(cuentaData);
+            document.getElementById("cuenta-badge").className =
+              "status-badge ok";
+            document.getElementById("cuenta-badge").textContent = "✓ Escaneado";
+          }
+          setScanStatus("docs-status", "done", "✓ Documentos escaneados");
+          document
+            .querySelector('.tab-btn[data-tab="docs"]')
+            .classList.remove("scanning");
+          document
+            .querySelector('.tab-btn[data-tab="docs"]')
+            .classList.add("complete");
+          document.getElementById("badge-2").textContent = "✓";
+          toast("Documentos escaneados — revisa los campos", "success");
         } catch (err) {
-          toast(`Error al consultar tabla: ${err.message}`, "error");
+          setScanStatus("docs-status", "error-status", "✗ Error");
+          document
+            .querySelector('.tab-btn[data-tab="docs"]')
+            .classList.remove("scanning");
+          toast("Error al escanear: " + err.message, "error");
         } finally {
           setLoading(btn, false);
         }
       }
 
-      function mostrarTabla(t) {
-        state.tablaData = t;
-        document.getElementById("tabla-placeholder").style.display = "none";
-        const stats = document.getElementById("tabla-stats");
-        stats.style.display = "grid";
-
-        document.getElementById("stat-montoPagare").textContent = fmt(
-          t.montoPagare,
-        );
-        document.getElementById("stat-descuentoQuincenal").textContent = fmt(
-          t.descuentoQuincenal,
-        );
-        document.getElementById("stat-cat").textContent = pct(t.cat ?? 0);
-        document.getElementById("stat-tasaMensual").textContent = pct(
-          t.tasaMensual,
-        );
-        document.getElementById("stat-tasaAnual").textContent = pct(
-          t.tasaMensual * 12,
-        );
-        document.getElementById("stat-importeInteres").textContent = fmt(
-          t.importeInteres,
-        );
-
-        const letrasCard = document.getElementById("card-monto-letras");
-        letrasCard.style.display = "block";
-        document.getElementById("monto-letras-val").value = numeroALetras(
-          t.montoPagare,
-        );
-
-        document
-          .getElementById("badge-2")
-          .closest(".tab-btn")
-          .classList.add("complete");
-        checkRequiredFields();
-      }
-
-      /* ── Test connection ──────────────────────────── */
-      async function testConnection() {
-        const el = document.getElementById("api-status");
-        el.textContent = "…";
-        el.className = "ocr-status";
-        try {
-          const res = await fetch(`${apiBase()}/health`, {
-            signal: AbortSignal.timeout(3000),
-          });
-          if (res.ok) {
-            el.textContent = "✓ Conectado";
-            el.className = "ocr-status ok";
-          } else {
-            el.textContent = `✗ HTTP ${res.status}`;
-            el.className = "ocr-status err";
-          }
-        } catch {
-          el.textContent = "✗ Sin conexión";
-          el.className = "ocr-status err";
-        }
-      }
-
-      /* ── Build payload ──────────────────────────── */
-      function buildPayload() {
-        const g = (id) => document.getElementById(id)?.value?.trim() || "";
-        return {
-          ine: {
-            nombre1: g("ine-nombre1"),
-            nombre2: g("ine-nombre2"),
-            apellidoPaterno: g("ine-apellidoPaterno"),
-            apellidoMaterno: g("ine-apellidoMaterno"),
-            curp: g("ine-curp"),
-            sexo: g("ine-sexo"),
-            fechaNac: g("ine-fechaNac"),
-            claveElector: g("ine-claveElector"),
-            seccion: g("ine-seccion"),
-            vigencia: g("ine-vigencia"),
-            numEmision: g("ine-numEmision"),
-            domicilio: {
-              calle: g("ine-calle"),
-              numeroCasa: g("ine-numeroCasa"),
-              colonia: g("ine-colonia"),
-              codigoPostal: g("ine-codigoPostal"),
-              municipio: g("ine-municipio"),
-              estado: g("ine-estado"),
-            },
-          },
-          tabla: state.tablaData
-            ? {
-                ...state.tablaData,
-                montoNeto: parseFloat(
-                  document.getElementById("tabla-montoNeto").value,
-                ),
-                plazoQuincenas: state.plazoSeleccionado,
-              }
-            : null,
-          extra: {
-            folio: g("extra-folio"),
-            vendedor: g("extra-vendedor"),
-            estadoCivil: g("extra-estadoCivil"),
-            lugarFecha: g("extra-lugarFecha"),
-            fechaContrato: g("extra-fechaContrato"),
-            fechaArranque: g("extra-fechaArranque"),
-            rfc: g("extra-rfc"),
-            telefonoCelular: g("extra-telefonoCelular"),
-            telefonoCasa: g("extra-telefonoCasa"),
-            mail: g("extra-mail"),
-            ingresoMensual: g("extra-ingresoMensual"),
-            dependencia: g("extra-dependencia"),
-            empleado: g("extra-empleado"),
-            departamento: g("extra-departamento"),
-            puesto: g("extra-puesto"),
-            añosAntiguedad: g("extra-añosAntiguedad"),
-            mesesAntiguedad: g("extra-mesesAntiguedad"),
-            referencia1: g("extra-referencia1"),
-            telefonoReferencia1: g("extra-telefonoReferencia1"),
-            referencia2: g("extra-referencia2"),
-            telefonoReferencia2: g("extra-telefonoReferencia2"),
-            referencia3: g("extra-referencia3"),
-            telefonoReferencia3: g("extra-telefonoReferencia3"),
-            banco: g("extra-banco"),
-            numeroCuenta: g("extra-numeroCuenta"),
-            clabe: g("extra-clabe"),
-          },
-        };
-      }
-
-      /* ── Validation ──────────────────────────── */
-      const REQUIRED_FIELDS = [
-        { id: "ine-nombre1", label: "Primer Nombre" },
-        { id: "ine-apellidoPaterno", label: "Apellido Paterno" },
-        { id: "ine-apellidoMaterno", label: "Apellido Materno" },
-        { id: "ine-curp", label: "CURP" },
-        { id: "ine-fechaNac", label: "Fecha de Nacimiento" },
-        { id: "ine-calle", label: "Calle" },
-        { id: "ine-numeroCasa", label: "No. Exterior" },
-        { id: "ine-colonia", label: "Colonia" },
-        { id: "ine-codigoPostal", label: "Código Postal" },
-        { id: "ine-municipio", label: "Municipio" },
-        { id: "ine-estado", label: "Estado" },
-        { id: "extra-folio", label: "Folio" },
-        { id: "extra-telefonoCelular", label: "Teléfono Celular" },
-        { id: "extra-dependencia", label: "Dependencia" },
-        { id: "extra-empleado", label: "No. Empleado" },
-        { id: "extra-referencia1", label: "Referencia 1" },
-      ];
-
-      function checkRequiredFields() {
-        const empty = REQUIRED_FIELDS.filter(
-          (f) => !document.getElementById(f.id)?.value?.trim(),
-        );
-        const hasTabla = !!state.tablaData;
-        const statusEl = document.getElementById("footer-status");
-
-        if (empty.length === 0 && hasTabla) {
-          statusEl.textContent = "✓ Todo listo. Puedes generar el contrato.";
-          statusEl.className = "footer-validation";
-          document
-            .getElementById("badge-1")
-            .closest(".tab-btn")
-            .classList.add("complete");
-          document
-            .getElementById("badge-3")
-            .closest(".tab-btn")
-            .classList.add("complete");
-        } else {
-          const msgs = [];
-          if (!hasTabla) msgs.push('falta calcular la tabla en "Monto"');
-          if (empty.length)
-            msgs.push(`${empty.length} campo(s) requerido(s) vacío(s)`);
-          statusEl.textContent = `Pendiente: ${msgs.join(", ")}.`;
-          statusEl.className = "footer-validation has-errors";
-        }
-      }
-
-      // Check fields on change
-      document.querySelectorAll("input, select").forEach((el) => {
-        el.addEventListener("input", checkRequiredFields);
-        el.addEventListener("change", checkRequiredFields);
-      });
-
-      /* ── Mark required errors on field ────────────────── */
-      function markErrors() {
-        REQUIRED_FIELDS.forEach((f) => {
-          const inp = document.getElementById(f.id);
-          if (!inp) return;
-          const field = inp.closest(".field");
-          if (!inp.value.trim()) {
-            inp.classList.add("error");
-            field && field.classList.add("has-error");
-          } else {
-            inp.classList.remove("error");
-            field && field.classList.remove("has-error");
-          }
+      async function escanearNomina() {
+        const fd = new FormData();
+        fd.append("nomina1", state.nomina1File);
+        fd.append("nomina2", state.nomina2File);
+        const r = await fetch(api() + "/api/escanear-nomina", {
+          method: "POST",
+          body: fd,
         });
+        if (!r.ok) throw new Error("Nómina: " + r.status);
+        const res = await r.json();
+        return res.datos;
       }
 
-      /* ── Generar contrato ──────────────────────────── */
-      async function generarContrato() {
-        markErrors();
-        const empty = REQUIRED_FIELDS.filter(
-          (f) => !document.getElementById(f.id)?.value?.trim(),
+      async function escanearEstadoCuenta() {
+        const fd = new FormData();
+        fd.append("estadoCuenta", state.estadoCuentaFile);
+        const r = await fetch(api() + "/api/escanear-estado-cuenta", {
+          method: "POST",
+          body: fd,
+        });
+        if (!r.ok) throw new Error("Estado de cuenta: " + r.status);
+        const res = await r.json();
+        return res.datos;
+      }
+
+      function llenarNomina(d) {
+        const set = (id, val, badge) => {
+          const el = document.getElementById(id);
+          if (el && val != null) {
+            el.value = val;
+            el.classList.add("autofilled");
+            markAutofill(id, badge);
+          }
+        };
+        set("doc-rfc", d.rfc, "rfc-autobadge");
+        set("doc-empleado", d.noEmpleado, "empleado-autobadge");
+        set("doc-puesto", d.puesto, "puesto-autobadge");
+        set("doc-departamento", d.departamento, "departamento-autobadge");
+        set("doc-dependencia", d.dependencia, "dependencia-autobadge");
+        set("doc-ingresoMensual", d.ingresoMensual, "ingreso-autobadge");
+      }
+
+      function llenarCuenta(d) {
+        const set = (id, val, badge) => {
+          const el = document.getElementById(id);
+          if (el && val != null) {
+            el.value = val;
+            el.classList.add("autofilled");
+            markAutofill(id, badge);
+          }
+        };
+        set("doc-numeroCuenta", d.numeroCuenta, "numcuenta-autobadge");
+        set("doc-clabe", d.clabe, "clabe-autobadge");
+        if (d.banco) {
+          document.getElementById("doc-banco").value = d.banco;
+          markAutofill("doc-banco", "banco-autobadge");
+        }
+        if (d.rfc && !document.getElementById("doc-rfc").value) {
+          document.getElementById("doc-rfc").value = d.rfc;
+          markAutofill("doc-rfc", "rfc-autobadge");
+        }
+      }
+
+      // ─── TAB 3: Tabla de crédito ─────────────────────────────────
+      function selectPlazo(qnas) {
+        state.plazoSeleccionado = qnas;
+        document.getElementById("tabla-plazoQuincenas").value = qnas;
+        document
+          .querySelectorAll(".plazo-chip")
+          .forEach((c) =>
+            c.classList.toggle("selected", Number(c.dataset.qnas) === qnas),
+          );
+      }
+
+      async function consultarTabla() {
+        const monto = parseFloat(
+          document.getElementById("tabla-montoNeto").value,
         );
-        if (!state.tablaData) {
-          toast('Primero calcula la tabla en la pestaña "Monto"', "error");
-          document.querySelector('[data-tab="monto"]').click();
+        if (!monto || monto < 1000) {
+          toast("Ingresa un monto válido (mínimo $1,000)", "error");
+          document.getElementById("tabla-montoNeto").focus();
           return;
         }
-        if (empty.length > 0) {
+
+        const btn = document.getElementById("btn-calcular");
+        setLoading(btn, true, "Calculando...");
+        try {
+          const r = await fetch(api() + "/api/monto/filtrar-tabla", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              monto,
+              quincenas: state.plazoSeleccionado,
+            }),
+          });
+          if (!r.ok) throw new Error("HTTP " + r.status);
+
+          const tabla = await r.json();
+          state.tablaData = tabla;
+          renderTabla(tabla);
+
+          document
+            .querySelector('.tab-btn[data-tab="extras"]')
+            .classList.add("complete");
+          document.getElementById("badge-3").textContent = "✓";
+          toast("Tabla calculada correctamente", "success");
+        } catch (err) {
+          toast("Error al calcular tabla: " + err.message, "error");
+        } finally {
+          setLoading(btn, false);
+        }
+      }
+
+      function renderTabla(t) {
+        document.getElementById("tabla-result").innerHTML = `
+    <div class="tabla-stat">
+      <div class="tabla-stat-label">Monto Pagaré</div>
+      <div class="tabla-stat-value highlight">${fmt(t.montoPagare)}</div>
+    </div>
+    <div class="tabla-stat">
+      <div class="tabla-stat-label">Descuento Quincenal</div>
+      <div class="tabla-stat-value highlight">${fmt(t.descuentoQuincenal)}</div>
+    </div>
+    <div class="tabla-stat">
+      <div class="tabla-stat-label">CAT Anual</div>
+      <div class="tabla-stat-value">${pct(t.cat ?? 0)}</div>
+    </div>
+    <div class="tabla-stat">
+      <div class="tabla-stat-label">Tasa Mensual</div>
+      <div class="tabla-stat-value">${pct(t.tasaMensual)}</div>
+    </div>
+    <div class="tabla-stat">
+      <div class="tabla-stat-label">Tasa Anual</div>
+      <div class="tabla-stat-value">${pct(t.tasaMensual * 12)}</div>
+    </div>
+    <div class="tabla-stat">
+      <div class="tabla-stat-label">Intereses Totales</div>
+      <div class="tabla-stat-value">${fmt(
+        t.importeInteres ??
+          t.montoPagare -
+            parseFloat(document.getElementById("tabla-montoNeto").value),
+      )}</div>
+    </div>
+  `;
+      }
+
+      // ─── Antigüedad desde fecha ───────────────────────────────────
+      function calcularAntiguedadDesdeFecha() {
+        const input = document.getElementById("extra-fechaIngreso");
+        const valor = input.value?.trim();
+        if (!valor) {
+          document.getElementById("extra-mesesAntiguedad").value = "";
+          document.getElementById("extra-anosAntiguedad").value = "";
+          return;
+        }
+
+        const [y, m, d] = valor.split("-").map(Number);
+        if (!y || !m || !d) return;
+
+        const inicio = new Date(y, m - 1, d);
+        const hoy = new Date();
+
+        let anos = hoy.getFullYear() - inicio.getFullYear();
+        let meses = hoy.getMonth() - inicio.getMonth();
+        const dias = hoy.getDate() - inicio.getDate();
+
+        if (dias < 0) meses -= 1;
+        if (meses < 0) {
+          anos -= 1;
+          meses += 12;
+        }
+        if (anos < 0) {
+          anos = 0;
+          meses = 0;
+        }
+
+        const mesesTotales = anos * 12 + meses;
+        document.getElementById("extra-mesesAntiguedad").value = meses;
+        document.getElementById("extra-anosAntiguedad").value = anos;
+      }
+
+      // ─── Generar contrato ─────────────────────────────────────────
+      async function generarContrato() {
+        if (!state.tablaData) {
+          toast("Primero calcula la tabla en el Tab 3", "error");
+          goToTab("extras");
+          return;
+        }
+        const reqs = [
+          ["ine-nombre1", "Primer Nombre"],
+          ["ine-apellidoPaterno", "Apellido Paterno"],
+          ["ine-apellidoMaterno", "Apellido Materno"],
+          ["ine-curp", "CURP"],
+          ["ine-fechaNac", "Fecha de Nacimiento"],
+          ["ine-calle", "Calle"],
+          ["ine-numeroCasa", "No. Ext"],
+          ["ine-colonia", "Colonia"],
+          ["ine-codigoPostal", "CP"],
+          ["ine-municipio", "Municipio"],
+          ["ine-estado", "Estado"],
+        ];
+        const missing = reqs
+          .filter(([id]) => !document.getElementById(id).value.trim())
+          .map(([, l]) => l);
+        if (missing.length) {
           toast(
-            `Faltan ${empty.length} campo(s) requerido(s): ${empty
-              .map((f) => f.label)
-              .slice(0, 3)
-              .join(", ")}${empty.length > 3 ? "..." : ""}`,
+            `Faltan: ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? "..." : ""}`,
             "error",
             6000,
           );
+          goToTab("ine");
           return;
         }
 
         const btn = document.getElementById("btn-generar");
         setLoading(btn, true, "Generando PDF...");
-
         try {
-          const payload = buildPayload();
-          const res = await fetch(`${apiBase()}/api/pdf/rellenar-pdf`, {
+          const body = {
+            ine: {
+              nombre1: v("ine-nombre1"),
+              nombre2: v("ine-nombre2"),
+              apellidoPaterno: v("ine-apellidoPaterno"),
+              apellidoMaterno: v("ine-apellidoMaterno"),
+              curp: v("ine-curp"),
+              fechaNac: v("ine-fechaNac"),
+              claveElector: v("ine-claveElector"),
+              sexo: v("ine-sexo"),
+              seccion: v("ine-seccion"),
+              vigencia: v("ine-vigencia"),
+              numEmision: v("ine-numEmision"),
+              domicilio: {
+                calle: v("ine-calle"),
+                numeroCasa: v("ine-numeroCasa"),
+                colonia: v("ine-colonia"),
+                codigoPostal: v("ine-codigoPostal"),
+                municipio: v("ine-municipio"),
+                estado: v("ine-estado"),
+              },
+            },
+            tabla: {
+              ...state.tablaData,
+              montoNeto: parseFloat(v("tabla-montoNeto")),
+              plazoQuincenas: state.plazoSeleccionado,
+            },
+            nomina: {
+              rfc: v("doc-rfc"),
+              noEmpleado: v("doc-empleado"),
+              puesto: v("doc-puesto"),
+              departamento: v("doc-departamento"),
+              dependencia: v("doc-dependencia"),
+              ingresoMensual: parseFloat(v("doc-ingresoMensual")) || 0,
+            },
+            estadoCuenta: {
+              rfc: v("doc-rfc"),
+              numeroCuenta: v("doc-numeroCuenta"),
+              clabe: v("doc-clabe"),
+              banco: v("doc-banco"),
+            },
+            extra: {
+              folio: v("extra-folio"),
+              sucursal: v("extra-sucursal"), // 👈 nuevo
+              numVendedor: v("extra-numVendedor"), // 👈 nuevo
+              vendedor: v("extra-vendedor"),
+              fechaContrato: v("extra-fechaContrato"),
+              fechaArranque: v("extra-fechaArranque"),
+              lugarFecha: v("extra-lugarFecha"),
+              mesDescuento: v("extra-mesDescuento"),
+              añoDescuento: v("extra-anioDescuento"),
+              telefonoCelular: v("extra-telefonoCelular"),
+              telefonoCasa: v("extra-telefonoCasa"),
+              mail: v("extra-mail"),
+              estadoCivil: v("extra-estadoCivil"),
+              mesesAntiguedad: v("extra-mesesAntiguedad"),
+              añosAntiguedad: v("extra-anosAntiguedad"),
+              referencia1: v("extra-referencia1"),
+              referencia2: v("extra-referencia2"),
+              referencia3: v("extra-referencia3"),
+              telefonoReferencia1: v("extra-telRef1"),
+              telefonoReferencia2: v("extra-telRef2"),
+              telefonoReferencia3: v("extra-telRef3"),
+            },
+          };
+
+          const r = await fetch(api() + "/api/pdf/rellenar-pdf", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            body: JSON.stringify(body),
           });
-          if (!res.ok) {
-            const errText = await res.text();
-            throw new Error(`HTTP ${res.status}: ${errText}`);
+          if (!r.ok) {
+            const e = await r.json().catch(() => ({}));
+            throw new Error(e.error || r.status);
           }
-          const blob = await res.blob();
+          const blob = await r.blob();
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
-          const nombre = [
-            document.getElementById("ine-apellidoPaterno").value,
-            document.getElementById("ine-nombre1").value,
-            document.getElementById("extra-folio").value,
-          ]
-            .filter(Boolean)
-            .join("_")
-            .replace(/\s+/g, "_");
           a.href = url;
-          a.download = `contrato_${nombre || "nuevo"}.pdf`;
+          a.download = `CONTRATO_${(body.ine.apellidoPaterno + "_" + body.ine.nombre1).toUpperCase()}.pdf`;
+          document.body.appendChild(a);
           a.click();
+          a.remove();
           URL.revokeObjectURL(url);
-          toast(
-            "¡Contrato generado y descargado correctamente!",
-            "success",
-            5000,
-          );
+          toast("PDF generado y descargado", "success", 5000);
         } catch (err) {
-          toast(`Error al generar contrato: ${err.message}`, "error", 8000);
-          console.error(err);
+          toast("Error al generar PDF: " + err.message, "error", 6000);
         } finally {
           setLoading(btn, false);
         }
       }
 
-      /* ── Limpiar todo ──────────────────────────── */
+      // ─── Limpiar todo ─────────────────────────────────────────────
       function limpiarTodo() {
-        if (!confirm("¿Seguro que quieres limpiar todos los datos?")) return;
+        if (!confirm("¿Limpiar todos los datos?")) return;
         document
-          .querySelectorAll('input:not([type="hidden"]), select, textarea')
+          .querySelectorAll('input:not([type="hidden"]), select')
           .forEach((el) => {
             if (el.id === "api-base") return;
-            el.value = "";
-            el.classList.remove("error");
-            el.closest(".field")?.classList.remove("has-error");
+            el.type === "select-one" ? (el.selectedIndex = 0) : (el.value = "");
+            el.classList.remove("autofilled", "error");
           });
-        // Reset plazo
         selectPlazo(48);
-        // Reset INE image
-        state.ineImageFile = null;
-        state.tablaData = null;
-        document.getElementById("upload-placeholder").style.display = "";
+        Object.keys(state).forEach((k) => {
+          state[k] = k === "plazoSeleccionado" ? 48 : null;
+        });
+
+        ["drop-nom1", "drop-nom2", "drop-cuenta", "ine-drop-zone"].forEach(
+          (id) => document.getElementById(id)?.classList.remove("has-file"),
+        );
+        ["nom1-name", "nom2-name", "cuenta-name"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.style.display = "none";
+            el.textContent = "";
+          }
+        });
         document.getElementById("ine-preview").style.display = "none";
-        document.getElementById("ine-drop-zone").classList.remove("has-image");
-        document.getElementById("btn-procesar-ine").disabled = true;
-        document.getElementById("ocr-status").className = "ocr-status";
-        document.getElementById("ocr-status").textContent =
-          "Sube una imagen para continuar";
-        document.getElementById("tabla-stats").style.display = "none";
-        document.getElementById("tabla-placeholder").style.display = "";
-        document.getElementById("card-monto-letras").style.display = "none";
+        document.getElementById("ine-placeholder").style.display = "flex";
+        ["nom1-placeholder", "nom2-placeholder", "cuenta-placeholder"].forEach(
+          (id) => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = "flex";
+          },
+        );
         document
-          .querySelectorAll(".tab-btn")
-          .forEach((b) => b.classList.remove("complete"));
-        checkRequiredFields();
+          .querySelectorAll(".autofill-badge")
+          .forEach((b) => (b.style.display = "none"));
+        document.getElementById("nomina-badge").className =
+          "status-badge pending";
+        document.getElementById("nomina-badge").textContent = "Pendiente";
+        document.getElementById("cuenta-badge").className =
+          "status-badge pending";
+        document.getElementById("cuenta-badge").textContent = "Pendiente";
+        setScanStatus("ine-scan-status", "idle", "Sin escanear");
+        setScanStatus("docs-status", "idle", "Sube los 3 documentos");
+        ["ine", "docs", "extras"].forEach((tab) =>
+          document
+            .querySelector(`.tab-btn[data-tab="${tab}"]`)
+            .classList.remove("complete", "scanning"),
+        );
+        ["badge-1", "badge-2", "badge-3"].forEach(
+          (id, i) => (document.getElementById(id).textContent = String(i + 1)),
+        );
+        document.getElementById("btn-procesar-ine").disabled = true;
+        document.getElementById("btn-escanear-docs").disabled = true;
+        document.getElementById("tabla-result").innerHTML =
+          '<div class="tabla-placeholder">Ingresa el monto y presiona "Calcular tabla"</div>';
         toast("Formulario limpiado", "info");
       }
-
-      /* ── Auto-fill fecha contrato ──────────────────── */
-      const today = new Date().toISOString().split("T")[0];
-      document.getElementById("extra-fechaContrato").value = today;
-      document.getElementById("extra-lugarFecha").value = "GUASAVE, SIN.";
-
-      /* ── Init ──────────────────────────────── */
-      checkRequiredFields();
     </script>
   </body>
 </html>

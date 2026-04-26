@@ -1,34 +1,45 @@
-import { rellenarCamposPDF, fechaMesConLetra } from "../utils/index";
-import { ContratoData } from "../types";
 import {
-  numeroALetrasPesos,
+  rellenarCamposPDF,
+  fechaMesConLetra,
   numeroALetras,
-} from "../utils/numero_letras.utils";
-
+  numeroALetrasPesos,
+  numQuincena,
+  formatearCadaTresCaracteres,
+} from "../utils/index";
+import { ContratoData } from "../types";
+function formatearConComas(num: number | string): string {
+  return Number(num).toLocaleString("en-US");
+}
 export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
-  const { ine, tabla, extra } = contrato;
-  console.error("Extra:", contrato);
-  // ── Separar centavos ──────────────────────────
-  const [montoEnt, montoCent] = tabla.montoNeto.toFixed(2).split(".");
-  const [pagareEnt, pagareCent] = tabla.montoPagare.toFixed(2).split(".");
-  const [descEnt, descCent] = tabla.descuentoQuincenal.toFixed(2).split(".");
+  const { ine, tabla, extra, estadoCuenta, nomina } = contrato;
 
+  // ── Separar centavos ──────────────────────────
+  let [montoEnt, montoCent] = tabla.montoNeto.toFixed(2).split(".");
+  let [pagareEnt, pagareCent] = tabla.montoPagare.toFixed(2).split(".");
+  let [descEnt, descCent] = tabla.descuentoQuincenal.toFixed(2).split(".");
+  let [ingresoEnt, ingresoCent] = (nomina.ingresoMensual ?? 0)
+    .toFixed(2)
+    .split(".");
+  ingresoEnt = formatearConComas(ingresoEnt);
+  descEnt = formatearConComas(descEnt);
+  montoEnt = formatearConComas(montoEnt);
+  pagareEnt = formatearConComas(pagareEnt);
   // ── Fecha del contrato ────────────────────────
   // ── Fecha del contrato ────────────────────────
-  const fechaontrato = fechaMesConLetra(extra.fechaContrato ?? "");
+  const fechacontrato = fechaMesConLetra(extra.fechaContrato ?? "");
   const fechaArranque = fechaMesConLetra(extra.fechaArranque ?? "");
   // Agregar arriba, antes de la función
-
+  const numQuincenaResult = await numQuincena(fechaArranque);
   const camposPDF: Record<string, string> = {
     // ── INE ──────────────────────────────────────
-    "NOMBRE 1": ine.nombre1,
-    "NOMBRE 2": ine.nombre2,
-    "APELLIDO 1": ine.apellidoPaterno,
-    "APELLIDO 2": ine.apellidoMaterno,
+    "NOMBRE 1": ine.nombre1.toUpperCase(),
+    "NOMBRE 2": ine.nombre2.toUpperCase(),
+    "APELLIDO 1": ine.apellidoPaterno.toUpperCase(),
+    "APELLIDO 2": ine.apellidoMaterno.toUpperCase(),
     CURP: ine.curp,
-    NDIA: ine.fechaNac.split("/")[0],
-    NMES: ine.fechaNac.split("/")[1],
-    NAÑO: ine.fechaNac.split("/")[2],
+    NDIA: ine.fechaNac.split("-")[0],
+    NMES: ine.fechaNac.split("-")[1],
+    NAÑO: ine.fechaNac.split("-")[2],
     CALLE: ine.domicilio.calle,
     "NO EXT": ine.domicilio.numeroCasa,
     COLONIA: ine.domicilio.colonia,
@@ -40,68 +51,78 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
     NACIONALIDAD: "MEXICANA",
     PAIS: "MEXICO",
     "NOMBRE COMPLETO":
-      `${ine.nombre1} ${ine.nombre2} ${ine.apellidoPaterno} ${ine.apellidoMaterno}`.trim(),
+      `${ine.nombre1.toUpperCase()} ${ine.nombre2.toUpperCase()} ${ine.apellidoPaterno.toUpperCase()} ${ine.apellidoMaterno.toUpperCase()}`.trim(),
 
     // ── Tabla ─────────────────────────────────────
-    "MONTO CAPITAL": `$${montoEnt}`,
-    CENT1: montoCent,
-    "MONTO TOTAL": `$${pagareEnt}`,
+    "MONTO CAPITAL": `$${montoEnt}.${montoCent}`,
+    //CENT1: montoCent,
+    "MONTO TOTAL": `$${pagareEnt}.${pagareCent}`,
     CENT2: pagareCent,
-    DESCUENTO: descEnt,
+    DESCUENTO: "$" + descEnt + "." + descCent,
     CENT3: descCent,
     "TASA ANUAL": String(tabla.tasaMensual * 12),
     CAT: String(tabla.cat.toFixed(2)),
     PLAZO1: `${tabla.plazoQuincenas}`,
     "PLAZO LETRA": numeroALetras(tabla.plazoQuincenas),
-    "MONTO TOTAL LETRA": numeroALetrasPesos(tabla.montoPagare).split(
-      " PESOS",
-    )[0], // Solo la parte en letras, sin "PESOS"
-    "DESCUENTO LETRA": numeroALetrasPesos(tabla.descuentoQuincenal).split(
-      "PESOS",
-    )[0],
+    "MONTO TOTAL LETRA": `(${
+      numeroALetrasPesos(tabla.montoPagare).split(" PESOS")[0]
+    })`, // Solo la parte en letras, sin "PESOS"
+    "DESCUENTO LETRA": `(${numeroALetrasPesos(tabla.descuentoQuincenal).split(" PESOS")[0]})`, // Solo la parte en letras, sin "PESOS"
 
     // ── Fecha contrato ────────────────────────────
-    DIA: fechaontrato.dia,
-    MES: fechaontrato.mesLetra,
-    AÑO: fechaontrato.año,
-    "MES DESCUENTO": extra.mesDescuento ?? "",
-    "AÑO DESCUENTO": extra.añoDescuento ?? "",
+    DIA: fechacontrato.dia,
+    MES: fechacontrato.mesLetra,
+    AÑO: fechacontrato.año,
     // "INICIO QNA": extra.inicioQna ?? "",
 
     // ── Extra ─────────────────────────────────────
+    SUKURSAL: extra.sucursal ?? "SINALOA",
+    "NUM DE VENDEDOR": extra.numVendedor ?? "0",
     QNA: String(
-      ` ${fechaArranque.dia} ${fechaArranque.mesLetra}${fechaArranque.año}`,
+      `${numQuincenaResult} ${fechaArranque.dia} ${fechaArranque.mesLetra} ${fechaArranque.año}`,
     ),
+    "AÑO DESCUENTO": fechaArranque.año,
+    "MES DESCUENTO": fechaArranque.mesLetra ?? "",
     FOLIO: extra.folio ?? "",
-    RFC: extra.rfc ?? "",
-    VENDEDOR: extra.vendedor ?? "",
-    "TELEFONO CELULAR": extra.telefonoCelular ?? "",
-    "TELEFONO CASA": extra.telefonoCasa ?? "",
+    VENDEDOR: extra.vendedor?.toUpperCase() ?? "",
+    "TELEFONO CELULAR": await formatearCadaTresCaracteres(
+      extra.telefonoCelular ?? "",
+    ),
+    "TELEFONO CASA": await formatearCadaTresCaracteres(
+      extra.telefonoCasa ?? "",
+    ),
     MAIL: extra.mail ?? "",
-    "INGRESO MENSUAL": `$${extra.ingresoMensual ?? ""}`,
-    DEPENDENCIA: extra.dependencia ?? "",
-    EMPLEADO: extra.empleado?.toUpperCase() ?? "",
-    DEPARTAMENTO: extra.departamento?.toUpperCase() ?? "",
-    PUESTO: extra.puesto?.toUpperCase() ?? "",
     MESES: extra.mesesAntiguedad ?? "",
     AÑOS: extra.añosAntiguedad ?? "",
     "REFERENCIA 1": extra.referencia1 ?? "",
     "REFERENCIA 2": extra.referencia2 ?? "",
     "REFERENCIA 3": extra.referencia3 ?? "",
-    Texto46: extra.telefonoReferencia1 ?? "",
-    Texto47: extra.telefonoReferencia2 ?? "",
-    Texto48: extra.telefonoReferencia3 ?? "",
-    "NUMERO CUENTA": extra.numeroCuenta ?? "",
-    "CLABE INTERBANCARIA": extra.clabe ?? "",
+    Texto46: await formatearCadaTresCaracteres(extra.telefonoReferencia1 ?? ""),
+    Texto47: await formatearCadaTresCaracteres(extra.telefonoReferencia2 ?? ""),
+    Texto48: await formatearCadaTresCaracteres(extra.telefonoReferencia3 ?? ""),
+    LUGAR: extra.lugarFecha?.toUpperCase() ?? "",
     "LUGAR Y FECHA":
       (
         `${extra.lugarFecha?.toUpperCase()}` +
-        ` ${fechaontrato.dia} ${fechaontrato.mesLetra}${fechaontrato.año}`
+        ` ${fechacontrato.dia} ${fechacontrato.mesLetra}${fechacontrato.año}`
       ).trim() ?? "",
-
-    // ── Dropdowns ────────────────────────────────
     ECIVIL: extra.estadoCivil ?? "SOLTERO",
-    BANCOS: extra.banco ?? "",
+
+    /// Nomina-----------------------
+    RFC: estadoCuenta.rfc ?? nomina.rfc,
+    "INGRESO MENSUAL": `$${ingresoEnt}`,
+    CENT1: ingresoCent?.toString() ?? "",
+    EMPLEADO: nomina.noEmpleado ?? "",
+    DEPENDENCIA: nomina.dependencia ?? "",
+    DEPARTAMENTO: nomina.departamento?.toUpperCase() ?? "",
+    PUESTO: nomina.puesto?.toUpperCase() ?? "",
+
+    // ── Estado de cuenta ────────────────────────────────
+    "NUMERO CUENTA": estadoCuenta.numeroCuenta ?? "",
+    "CLABE INTERBANCARIA": await formatearCadaTresCaracteres(
+      estadoCuenta.clabe ?? "",
+    ),
+    BANCOS: estadoCuenta.banco ?? "",
   };
 
   return rellenarCamposPDF(camposPDF);

@@ -9,12 +9,14 @@ import {
   routerQuincenas,
   routerPDF,
   nominaRouter,
+  routerEstadoCuenta,
 } from "./src/routes";
 const app = express();
 cargarTablas();
 app.use(express.static(path.join(__dirname, "./public")));
 
 app.use(express.json());
+app.use("/api", routerEstadoCuenta);
 app.use("/api/ine", routerINE);
 app.use("/api/monto", routerQuincenas);
 app.use("/api/pdf", routerPDF);
