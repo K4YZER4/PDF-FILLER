@@ -14,7 +14,7 @@ const upload = multer({
     ];
     allowed.includes(file.mimetype)
       ? cb(null, true)
-      : cb(new Error("Solo imágenes"));
+      : cb(new Error("Solo imágenes o pdfs son permitidos"));
   },
 });
 

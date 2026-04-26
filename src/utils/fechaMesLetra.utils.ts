@@ -1,3 +1,4 @@
+import { fechaConLetra } from "../types/fecha.types";
 const MONTHS = [
   "ENERO",
   "FEBRERO",
@@ -12,9 +13,7 @@ const MONTHS = [
   "NOVIEMBRE",
   "DICIEMBRE",
 ];
-const fechaMesConLetra = (
-  fecha: string,
-): { dia: string; mes: string; año: string; mesLetra: string } => {
+const fechaMesConLetra = (fecha: string): fechaConLetra => {
   let fechaResultante = {
     dia: "",
     mes: "",
