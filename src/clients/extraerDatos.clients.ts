@@ -25,7 +25,7 @@ async function extraerDatosINE(fuente: Buffer) {
                 "nombre2": "segundo nombre de pila si existe, si no existe devuelve cadena vacía",
                 "apellidoPaterno": "primer apellido",
                 "apellidoMaterno": "segundo apellido",
-                "sexo": "H o M",
+                "sexo": "F o M",// F para femenino, M para masculino
                 "fechaNac": "DD/MM/YYYY",
                 "curp": "18 caracteres",
                 "claveElector": "18 caracteres",

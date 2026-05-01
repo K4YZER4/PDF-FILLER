@@ -3,7 +3,7 @@ interface IneData {
   nombre2: string;
   apellidoPaterno: string;
   apellidoMaterno: string;
-  sexo: "H" | "M";
+  sexo: "F" | "M";
   fechaNac: string;
   curp: string;
   claveElector: string;

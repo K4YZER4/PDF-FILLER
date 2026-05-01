@@ -31,8 +31,10 @@ interface DatosExtra {
   fechaArranque?: string;
   sucursal?: string;
   numVendedor?: string;
-  // Personal
   estadoCivil?: string;
+
+  propiedad?: "propia" | "rentada" | "familiar";
+  entreCalles?: string;
 }
 
 export { DatosExtra };

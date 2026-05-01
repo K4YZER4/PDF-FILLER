@@ -6,7 +6,7 @@ import { IneValida } from "../types";
 async function escanearINE(fuente: Buffer): Promise<IneValida> {
   const datos = await extraerDatosINE(fuente);
   const curpValidada = await validarCURP(datos.curp);
-
+  console.log("Datos extraídos:", datos);
   return { ...datos, curpValidada };
 }
 export { escanearINE };
