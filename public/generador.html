@@ -1042,7 +1042,7 @@
               <select id="ine-sexo">
                 <option value="">— Seleccionar —</option>
                 <option value="H">H - Hombre</option>
-                <option value="M">M - Mujer</option>
+                <option value="F">F - Femenino</option>
               </select>
             </div>
             <div class="field">
@@ -1657,6 +1657,23 @@
                 <option value="UNION LIBRE">UNIÓN LIBRE</option>
               </select>
             </div>
+            <div class="field">
+              <label>Propiedad de Vivienda</label>
+              <select id="extra-propiedad">
+                <option value="">— Seleccionar —</option>
+                <option value="propia">Propia</option>
+                <option value="rentada">Rentada</option>
+                <option value="familiar">Familiar</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Entre Calles</label>
+              <input
+                type="text"
+                id="extra-entreCalles"
+                placeholder="Ej: Av. Principal"
+              />
+            </div>
           </div>
         </div>
 
@@ -2104,6 +2121,22 @@
         set("ine-seccion", d.seccion);
         set("ine-vigencia", d.vigencia);
         set("ine-numEmision", d.numEmision);
+        // También llenar el campo Lugar en Extras con Municipio y Estado
+        if (d.domicilio && d.domicilio.municipio && d.domicilio.estado) {
+          const lugar = `${d.domicilio.municipio}, ${d.domicilio.estado}`;
+          const elLugar = document.getElementById("extra-lugarFecha");
+          if (elLugar) {
+            elLugar.value = lugar;
+            elLugar.classList.add("autofilled");
+          }
+          // Sucursal: primeras 3 letras del estado en mayúsculas
+          const sucursal = d.domicilio.estado.substring(0, 3).toUpperCase();
+          const elSucursal = document.getElementById("extra-sucursal");
+          if (elSucursal) {
+            elSucursal.value = sucursal;
+            elSucursal.classList.add("autofilled");
+          }
+        }
       }
 
       // ─── TAB 2: Escanear Documentos (paralelo) ───────────────────
@@ -2423,6 +2456,8 @@
               telefonoCasa: v("extra-telefonoCasa"),
               mail: v("extra-mail"),
               estadoCivil: v("extra-estadoCivil"),
+              propiedad: v("extra-propiedad"),
+              entreCalles: v("extra-entreCalles"),
               mesesAntiguedad: v("extra-mesesAntiguedad"),
               añosAntiguedad: v("extra-anosAntiguedad"),
               referencia1: v("extra-referencia1"),

@@ -7,6 +7,7 @@ import { fechaMesConLetra } from "./fechaMesLetra.utils";
 import { numeroALetrasPesos, numeroALetras } from "./numero_letras.utils";
 import { numQuincena } from "./numQuincena.utils";
 import { formatearCadaTresCaracteres } from "./guionEntre3Digitos.utils";
+import { formatearClabe } from "./formatearParaClabe.utils";
 export {
   extraerDatosINE,
   rellenarCamposPDF,
@@ -17,4 +18,5 @@ export {
   numeroALetras,
   numQuincena,
   formatearCadaTresCaracteres,
+  formatearClabe,
 };

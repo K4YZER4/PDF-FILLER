@@ -14,8 +14,16 @@ export async function rellenarCamposPDF(
   for (const [campo, valor] of Object.entries(datos)) {
     try {
       const field = form.getField(campo);
-
-      if (field.constructor.name === "PDFDropdown") {
+      const tipo = field.constructor.name;
+      if (tipo === "PDFCheckBox") {
+        // ✅ NUEVO: marcar/desmarcar checkbox
+        const checkbox = form.getCheckBox(campo);
+        if (valor === "Yes") {
+          checkbox.check();
+        } else {
+          checkbox.uncheck();
+        }
+      } else if (tipo === "PDFDropdown") {
         // Dropdown: solo select, sin setAlignment
         form.getDropdown(campo).select(valor);
       } else {
@@ -23,12 +31,14 @@ export async function rellenarCamposPDF(
         const textField = form.getTextField(campo);
         textField.setText(valor);
         textField.setAlignment(TextAlignment.Center);
+        textField.setFontSize(10);
       }
     } catch {
-      console.warn(`⚠️ Campo no encontrado: "${campo}"`);
+      console.warn(` Campo no encontrado: "${campo}"`);
     }
   }
-
+  form.updateFieldAppearances();
+  form.flatten();
   const pdfFinal = await pdfDoc.save();
   return Buffer.from(pdfFinal);
 }

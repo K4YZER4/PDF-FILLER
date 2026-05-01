@@ -5,6 +5,7 @@ import {
   numeroALetrasPesos,
   numQuincena,
   formatearCadaTresCaracteres,
+  formatearClabe,
 } from "../utils/index";
 import { ContratoData } from "../types";
 function formatearConComas(num: number | string): string {
@@ -37,9 +38,9 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
     "APELLIDO 1": ine.apellidoPaterno.toUpperCase(),
     "APELLIDO 2": ine.apellidoMaterno.toUpperCase(),
     CURP: ine.curp,
-    NDIA: ine.fechaNac.split("-")[0],
+    NDIA: ine.fechaNac.split("-")[2],
     NMES: ine.fechaNac.split("-")[1],
-    NAÑO: ine.fechaNac.split("-")[2],
+    NAÑO: ine.fechaNac.split("-")[0],
     CALLE: ine.domicilio.calle,
     "NO EXT": ine.domicilio.numeroCasa,
     COLONIA: ine.domicilio.colonia,
@@ -52,7 +53,8 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
     PAIS: "MEXICO",
     "NOMBRE COMPLETO":
       `${ine.nombre1.toUpperCase()} ${ine.nombre2.toUpperCase()} ${ine.apellidoPaterno.toUpperCase()} ${ine.apellidoMaterno.toUpperCase()}`.trim(),
-
+    "Casilla de verificación1": ine.sexo === "F" ? "Yes" : "No",
+    "Casilla de verificación2": ine.sexo === "M" ? "Yes" : "No",
     // ── Tabla ─────────────────────────────────────
     "MONTO CAPITAL": `$${montoEnt}.${montoCent}`,
     //CENT1: montoCent,
@@ -60,7 +62,7 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
     CENT2: pagareCent,
     DESCUENTO: "$" + descEnt + "." + descCent,
     CENT3: descCent,
-    "TASA ANUAL": String(tabla.tasaMensual * 12),
+    "TASA ANUAL": String((tabla.tasaMensual * 12).toFixed(2)),
     CAT: String(tabla.cat.toFixed(2)),
     PLAZO1: `${tabla.plazoQuincenas}`,
     "PLAZO LETRA": numeroALetras(tabla.plazoQuincenas),
@@ -76,6 +78,9 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
     // "INICIO QNA": extra.inicioQna ?? "",
 
     // ── Extra ─────────────────────────────────────
+    "Casilla de verificación3": extra.propiedad === "propia" ? "Yes" : "No",
+    "Casilla de verificación4": extra.propiedad === "rentada" ? "Yes" : "No",
+    "Casilla de verificación5": extra.propiedad === "familiar" ? "Yes" : "No",
     SUKURSAL: extra.sucursal ?? "SINALOA",
     "NUM DE VENDEDOR": extra.numVendedor ?? "0",
     QNA: String(
@@ -107,6 +112,7 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
         ` ${fechacontrato.dia} ${fechacontrato.mesLetra}${fechacontrato.año}`
       ).trim() ?? "",
     ECIVIL: extra.estadoCivil ?? "SOLTERO",
+    "ENTRE CALLES": extra.entreCalles ?? "",
 
     /// Nomina-----------------------
     RFC: estadoCuenta.rfc ?? nomina.rfc,
@@ -119,9 +125,7 @@ export async function generarContrato(contrato: ContratoData): Promise<Buffer> {
 
     // ── Estado de cuenta ────────────────────────────────
     "NUMERO CUENTA": estadoCuenta.numeroCuenta ?? "",
-    "CLABE INTERBANCARIA": await formatearCadaTresCaracteres(
-      estadoCuenta.clabe ?? "",
-    ),
+    "CLABE INTERBANCARIA": await formatearClabe(estadoCuenta.clabe ?? ""),
     BANCOS: estadoCuenta.banco ?? "",
   };
 

@@ -4,3 +4,4 @@ node_modules/
 contrato.pdf
 demos/
 tablas/
+/src/generated/prisma
